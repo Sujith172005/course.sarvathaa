@@ -177,68 +177,42 @@
     })();
 
 
-// Fit full topic rows into Silver's height; never cut a topic in half.
+// Gold and Platinum: show exactly the first 15 topics initially.
+// "Read more" reveals every remaining topic for that plan only.
 (function () {
-  const silver = document.getElementById('silver-plan');
-  const cards = [...document.querySelectorAll('#gold-plan, #platinum-plan')];
-  if (!silver || !cards.length) return;
-  let scheduled = false;
+  const VISIBLE_TOPICS = 14;
+  const cards = [
+    document.getElementById('gold-plan'),
+    document.getElementById('platinum-plan')
+  ].filter(Boolean);
 
-  function fitCards() {
-    scheduled = false;
-    const height = silver.getBoundingClientRect().height;
-    if (!height) return;
-    cards.forEach(card => {
-      const list = card.querySelector('.tier-topics');
-      const button = card.querySelector('.tier-read-more');
-      const items = [...list.children];
-      card.style.setProperty('--silver-card-height', height + 'px');
-      items.forEach(item => { item.hidden = false; });
-      if (button.getAttribute('aria-expanded') === 'true') return;
-      card.classList.add('is-collapsed');
-      const bottom = list.getBoundingClientRect().bottom;
-      let overflow = false;
-      items.forEach(item => {
-        if (item.getBoundingClientRect().bottom > bottom + 0.5) overflow = true;
-        item.hidden = overflow;
-      });
-    });
-  }
-
-  function scheduleFit() {
-    if (!scheduled) {
-      scheduled = true;
-      requestAnimationFrame(fitCards);
-    }
-  }
-
-  cards.forEach(card => {
+  cards.forEach(function (card) {
+    const list = card.querySelector('.tier-topics');
     const button = card.querySelector('.tier-read-more');
-    card.classList.add('is-collapsible', 'is-collapsed');
-    button.hidden = false;
-    button.textContent = 'Read more';
-    button.setAttribute('aria-expanded', 'false');
-    button.addEventListener('click', () => {
-      const expand = button.getAttribute('aria-expanded') !== 'true';
-      button.setAttribute('aria-expanded', String(expand));
-      button.textContent = expand ? 'Read less' : 'Read more';
-      card.classList.toggle('is-collapsed', !expand);
-      fitCards();
-      // Keep the control visible when a long expanded card collapses.
-      if (!expand) {
-        const box = button.getBoundingClientRect();
-        if (box.bottom < 0 || box.top > window.innerHeight) {
-          button.scrollIntoView({ block: 'center', behavior: 'auto' });
-        }
-      }
+    if (!list || !button) return;
+
+    const items = Array.from(list.children);
+    const remaining = Math.max(0, items.length - VISIBLE_TOPICS);
+
+    function update(expanded) {
+      items.forEach(function (item, index) {
+        item.hidden = !expanded && index >= VISIBLE_TOPICS;
+      });
+
+      button.setAttribute('aria-expanded', String(expanded));
+      button.textContent = expanded ? 'Read less' : ('Read more (' + remaining + ')');
+
+      // Show how many topics are waiting to be revealed.
+      button.dataset.remaining = expanded ? '' : String();
+    }
+
+    button.hidden = remaining === 0;
+
+    button.addEventListener('click', function () {
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      update(!expanded);
     });
+
+    update(false);
   });
-  fitCards();
-  if ('ResizeObserver' in window) {
-    const observer = new ResizeObserver(scheduleFit);
-    observer.observe(silver);
-    observer.observe(silver.parentElement);
-  }
-  window.addEventListener('resize', scheduleFit);
-  if (document.fonts) document.fonts.ready.then(scheduleFit);
 })();
