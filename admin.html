@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Sarvathaa course administration">
+  <title>Sarvathaa Admin Dashboard</title>
+  <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    .admin-page{background:#fff8f4;min-height:100vh}.admin-shell{max-width:1280px;margin:auto;padding:28px 18px 60px}
+    .admin-head{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:24px}.admin-head h1{margin:0;color:#4b2d1f}
+    .admin-section{background:#fff;border:1px solid rgba(122,67,27,.14);border-radius:20px;padding:22px;margin:0 0 24px;box-shadow:0 10px 28px rgba(72,39,19,.08)}
+    .admin-section h2{margin-top:0}.admin-table-wrap{overflow-x:auto}.admin-table{width:100%;border-collapse:collapse;min-width:850px}
+    .admin-table th,.admin-table td{text-align:left;padding:12px;border-bottom:1px solid #eaded6;vertical-align:top}.admin-table th{color:#7a431b;background:#fff7f0}
+    .admin-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.admin-form-grid label{font-weight:700;color:#4b2d1f}.admin-form-grid input,.admin-form-grid select{width:100%;margin-top:7px;padding:12px;border:1px solid #d8c3b5;border-radius:10px}
+    .admin-actions{display:flex;gap:10px;align-items:end}.search-row{display:flex;gap:10px;margin-bottom:14px}.search-row input{flex:1;padding:12px;border:1px solid #d8c3b5;border-radius:10px}
+    @media(max-width:800px){.admin-form-grid{grid-template-columns:1fr}.admin-head{align-items:flex-start;flex-direction:column}.search-row{flex-wrap:wrap}}
+  </style>
+</head>
+<body class="admin-page">
+  <main class="admin-shell">
+    <div class="admin-head">
+      <div><p class="eyebrow">Sarvathaa Team</p><h1>Course Admin Dashboard</h1><p>Approve requests, create student passwords and activate only the purchased plan.</p></div>
+      <button class="btn secondary" id="adminLogoutBtn" type="button">Logout</button>
+    </div>
+
+    <section class="admin-section">
+      <h2>New Plan Requests</h2>
+      <p class="muted">Click Create Login after payment is verified. The requested plan is selected automatically.</p>
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Request</th><th>Customer</th><th>Plan</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody id="purchaseRequestsTable"><tr><td colspan="6">Loading requests...</td></tr></tbody></table></div>
+    </section>
+
+    <section class="admin-section">
+      <h2>Create Student Login Manually</h2>
+      <form id="addStudentForm" class="admin-form-grid">
+        <label>Name<input id="studentName" required></label>
+        <label>Email<input id="studentEmail" type="email"></label>
+        <label>WhatsApp Number<input id="studentPhone" required inputmode="numeric"></label>
+        <label>Username<input id="studentUsername" required autocomplete="off"></label>
+        <label>Password<input id="studentPassword" required type="password" minlength="6"></label>
+        <label>Plan<select id="studentCourse" required></select></label>
+        <label>Access Valid Until<input id="studentExpiryDate" required type="date"></label>
+        <div class="admin-actions"><button class="btn" type="submit">Create Student Login</button></div>
+      </form>
+      <p class="form-message" id="addStudentMessage"></p>
+    </section>
+
+    <section class="admin-section">
+      <h2>Students and Plan Access</h2>
+      <div class="search-row"><input id="studentSearchInput" placeholder="Search name, phone, email or username"><button class="btn secondary" id="studentSearchBtn" type="button">Search</button><button class="btn secondary" id="exportStudentsBtn" type="button">Export</button></div>
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Phone</th><th>Login</th><th>Activated Plan</th><th>Created</th><th>Profile</th><th>Status</th><th>Actions</th></tr></thead><tbody id="studentsTable"><tr><td colspan="8">Loading students...</td></tr></tbody></table></div>
+    </section>
+  </main>
+  <script src="assets/js/course-app.js"></script>
+  <script>document.getElementById('studentCourse').innerHTML=courseSelectOptions();</script>
+</body>
+</html>

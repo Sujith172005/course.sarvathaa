@@ -1,0 +1,51 @@
+SARVATHAA COURSE LOGIN - QUICK GUIDE
+====================================
+
+LOGIN PAGE
+http://127.0.0.1:5000/course-login.html
+
+DEFAULT ADMIN LOGIN
+Username: sarvathaa_admin
+Password: Sarvathaa@2026!
+
+For the live VPS, set ADMIN_USERNAME and ADMIN_PASSWORD in your service environment.
+Environment values override the default login above. Restart the Gunicorn service after changing them.
+
+CUSTOMER FLOW
+1. Customer opens Bake to Business Program.
+2. Customer selects Silver, Bronze, Gold or Platinum and submits the request.
+3. Request appears under New Plan Requests in the admin dashboard.
+4. After verifying payment, admin clicks Create Login.
+5. Admin creates the student username, password and access expiry date.
+6. Admin sends the generated login to the customer's WhatsApp.
+7. Student opens the common login page and uses Student Course Login.
+8. Only the activated plan opens. Other plan content stays locked.
+
+LOCAL START
+1. Install packages: pip install -r requirements.txt
+2. Import database.sql into MySQL, or run app.py once with the correct MySQL settings.
+3. Start: python app.py
+4. Open: http://127.0.0.1:5000
+
+SAMPLE VIDEOS
+Two small sample videos are inside assets/videos:
+- sample-lesson-1.mp4
+- sample-lesson-2.mp4
+
+You can replace these files later using the same filenames.
+
+PLAN QUIZZES
+- Silver, Bronze, Gold and Platinum each contain 10 different questions.
+- Students must answer all questions.
+- 70% or above passes.
+- Every attempt and best score are stored in the quiz_attempts database table.
+- A student can open only the quiz belonging to an activated plan.
+
+PROTECTED SAMPLE NOTES
+Each plan has a two-page sample document inside private_course_docs.
+Students read rendered pages through the protected course reader after login.
+Raw PDF URLs, backend source, SQL and private rendered folders are blocked.
+
+IMPORTANT DATABASE UPDATE
+For an existing VPS database, run the updated database.sql once so the
+quiz_attempts table is created. The app init_db function also creates it when run.

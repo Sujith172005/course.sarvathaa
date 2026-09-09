@@ -1,0 +1,7 @@
+IMPORTANT: Run this once on VPS MySQL if your old database is already created.
+
+mysql -u sarvathaa_user -p sarvathaa_courses < database.sql
+
+This creates the new student_courses table.
+Old students will be copied into student_courses automatically, so existing logins continue working.
+After this update, admin can click Add Course for an existing student and keep the same username/password.

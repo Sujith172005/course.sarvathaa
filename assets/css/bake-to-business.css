@@ -1,0 +1,429 @@
+    .tier-courses-section {
+      width: 100%;
+      max-width: 1280px;
+      margin: 32px auto 48px;
+      padding: 0 18px;
+      box-sizing: border-box
+    }
+
+    .tier-courses-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      align-items: start;
+      width: 100%;
+    }
+
+    .tier-course-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      height: auto;
+      box-sizing: border-box;
+      padding: 0 24px 24px;
+      background: #fff;
+      border: 1px solid rgba(196, 45, 99, .13);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(50, 30, 20, .08);
+      text-align: left;
+      overflow: hidden;
+      scroll-margin-top: 140px;
+      transition: box-shadow .2s ease
+    }
+
+    .tier-course-card:hover {
+      box-shadow: 0 18px 38px rgba(50, 30, 20, .13)
+    }
+
+    .tier-course-top {
+      padding: 22px 20px 20px;
+      margin: 0 -24px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(0, 0, 0, .06)
+    }
+
+    .silver-tier .tier-course-top {
+      background: linear-gradient(135deg, #f5f7fa, #e7ebf0)
+    }
+
+    .gold-tier {
+      border: 2px solid #e0b62d;
+      box-shadow: 0 18px 42px rgba(196, 151, 20, .18)
+    }
+
+
+    .gold-tier .tier-course-top {
+      background: linear-gradient(135deg, #fff3bf, #f4cf57)
+    }
+
+    .platinum-tier .tier-course-top {
+      background: linear-gradient(135deg, #f5f1fb, #ded5ef)
+    }
+
+    .tier-popular {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #c89b21;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 0 0 0 12px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase
+    }
+
+    .tier-course-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .06em
+    }
+
+    .silver-tier .tier-course-badge {
+      background: #fff;
+      color: #62666b
+    }
+
+    .gold-tier .tier-course-badge {
+      background: #fff8db;
+      color: #8b6800
+    }
+
+    .platinum-tier .tier-course-badge {
+      background: #fff;
+      color: #65537d
+    }
+
+    .tier-course-card h3 {
+      margin: 13px 0 5px;
+      font-size: 25px;
+      line-height: 1.2;
+      color: #35141f;
+      text-align: center
+    }
+
+    .tier-course-subtitle {
+      margin: 0;
+      color: #765d48;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+      text-align: center
+    }
+
+    .tier-price {
+      margin: 20px 0 18px;
+      text-align: center;
+      font-size: 31px;
+      font-weight: 900;
+      color: #c42d63
+    }
+
+    .tier-price small {
+      display: block;
+      margin-top: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #8b7669
+    }
+
+    .tier-course-label {
+      margin: 0 0 10px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #35141f;
+      text-transform: uppercase;
+      letter-spacing: .07em
+    }
+
+    .tier-course-card ul {
+      flex: none;
+      margin: 0 0 22px;
+      padding: 0;
+      list-style: none;
+      text-align: left
+    }
+
+    .tier-course-card li {
+      position: relative;
+      margin: 0 0 10px;
+      padding-left: 24px;
+      color: #59463c;
+      font-size: 14px;
+      line-height: 1.45
+    }
+
+    .tier-course-card li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-weight: 900;
+      font-size: 15px
+    }
+
+    .silver-tier li:before {
+      color: #74787d
+    }
+
+    .gold-tier li:before {
+      color: #c49316
+    }
+
+    .platinum-tier li:before {
+      color: #735b91
+    }
+
+    .tier-course-btn,
+    .tier-course-help {
+      width: 100%;
+      min-height: 46px;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      box-sizing: border-box
+    }
+
+    .tier-course-btn {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, #c42d63, #d14d79);
+      margin-bottom: 10px;
+      box-shadow: 0 8px 18px rgba(196, 45, 99, .18)
+    }
+
+    .gold-tier .tier-course-btn {
+      background: linear-gradient(135deg, #b88300, #d6a91f);
+      box-shadow: 0 8px 18px rgba(194, 147, 18, .22)
+    }
+
+    .tier-course-help {
+      border: 1px solid rgba(196, 45, 99, .18);
+      background: #fff;
+      color: #8d3151
+    }
+
+    .tier-course-btn:hover,
+    .tier-course-help:hover {
+      filter: brightness(.98);
+      transform: translateY(-1px)
+    }
+
+    @media(max-width:1000px) {
+      .tier-courses-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+      }
+    }
+
+    @media(max-width:680px) {
+      .tier-courses-section {
+        padding: 0 12px
+      }
+
+      .tier-courses-grid {
+        grid-template-columns: 1fr;
+        gap: 18px
+      }
+    }
+
+    /* Course purchase modal */
+    .course-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(28, 17, 23, .62);
+      backdrop-filter: blur(5px);
+    }
+
+    .course-modal.is-open {
+      display: flex
+    }
+
+    .course-modal-box {
+      position: relative;
+      width: min(560px, 100%);
+      max-height: 92vh;
+      overflow: auto;
+      background: #fff;
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .25);
+    }
+
+    .course-close {
+      position: absolute;
+      right: 16px;
+      top: 12px;
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      background: #f7eaf0;
+      color: #8d3151;
+      font-size: 25px;
+      cursor: pointer;
+    }
+
+    .course-modal-box h2 {
+      margin: 0 42px 8px 0;
+      color: #35141f
+    }
+
+    .modal-help {
+      margin: 0 0 18px;
+      color: #6b5560;
+      line-height: 1.55
+    }
+
+    .course-form {
+      display: grid;
+      gap: 13px
+    }
+
+    .course-form label {
+      display: grid;
+      gap: 6px;
+      font-weight: 800;
+      color: #43202c
+    }
+
+    .course-form input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 13px;
+      border: 1px solid #e2d5db;
+      border-radius: 12px;
+      font: inherit;
+      background: #fff;
+    }
+
+    .course-form input:focus {
+      outline: 2px solid rgba(196, 45, 99, .16);
+      border-color: #c42d63
+    }
+
+    .required-star {
+      color: #c42d63
+    }
+
+    .optional-text {
+      font-size: 11px;
+      color: #8a7a82;
+      font-weight: 600
+    }
+
+    .coupon-inline {
+      display: flex;
+      gap: 8px
+    }
+
+    .coupon-inline input {
+      min-width: 0;
+      flex: 1
+    }
+
+    .coupon-inline button {
+      white-space: nowrap
+    }
+
+    .coupon-message {
+      margin: 4px 0 0;
+      color: #7a6570;
+      font-size: 13px
+    }
+
+    .coupon-summary[hidden] { display: none; }
+
+    .coupon-summary {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 14px;
+      padding: 13px 15px;
+      border-radius: 14px;
+      background: #fff7fa;
+      border: 1px solid rgba(196, 45, 99, .12)
+    }
+
+    .payment-whatsapp-btn {
+      width: 100%;
+      margin-top: 4px
+    }
+
+    .purchase-status {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .purchase-status.show {
+      display: block
+    }
+
+    .purchase-status.success {
+      background: #eaf9f0;
+      color: #167342
+    }
+
+    .purchase-status.error {
+      background: #fff0f2;
+      color: #a32145
+    }
+
+    body.modal-open {
+      overflow: hidden
+    }
+
+/* Keep the enquiry controls inside small screens. */
+.whatsapp { right: max(16px, env(safe-area-inset-right)); max-width: calc(100vw - 32px); box-sizing: border-box; }
+@media (max-width: 680px) {
+  .course-modal { padding: 12px; }
+  .course-modal-box { padding: 22px 16px; box-sizing: border-box; max-height: calc(100dvh - 24px); }
+}
+
+/* Gold and Platinum match Silver while collapsed; expansion affects only that plan. */
+.tier-course-card.is-collapsible > :not(.tier-topics) { flex-shrink: 0; }
+.tier-course-card.is-collapsible .tier-topics { margin-bottom: 12px; }
+.tier-course-card.is-collapsed {
+  height: var(--silver-card-height);
+}
+.tier-course-card.is-collapsed .tier-topics {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.tier-topics > li[hidden], .tier-read-more[hidden] { display: none; }
+.tier-read-more {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 4px 0;
+  margin: 0 0 12px;
+  border: 0;
+  background: transparent;
+  color: #8d3151;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.tier-read-more::after { content: '+'; font-size: 20px; line-height: 1; }
+.tier-read-more[aria-expanded="true"]::after { content: '−'; }
+.tier-read-more:hover { text-decoration: underline; }
+.tier-read-more:focus-visible { outline: 2px solid #8d3151; outline-offset: 4px; border-radius: 3px; }
