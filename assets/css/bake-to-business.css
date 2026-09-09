@@ -37,8 +37,8 @@
     }
 
     .tier-course-top {
-      padding: 22px 20px 20px;
-      margin: 0 -24px 20px;
+      padding: 2px 20px 10px;
+      margin: 0 -24px 0px;
       text-align: center;
       border-bottom: 1px solid rgba(0, 0, 0, .06)
     }
@@ -104,7 +104,7 @@
 
     .tier-course-card h3 {
       margin: 13px 0 5px;
-      font-size: 25px;
+      font-size: 20px;
       line-height: 1.2;
       color: #35141f;
       text-align: center
@@ -120,7 +120,7 @@
     }
 
     .tier-price {
-      margin: 20px 0 18px;
+      margin: 10px 0 10px;
       text-align: center;
       font-size: 31px;
       font-weight: 900;
@@ -130,7 +130,7 @@
     .tier-price small {
       display: block;
       margin-top: 3px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: #8b7669
     }
@@ -156,8 +156,8 @@
       position: relative;
       margin: 0 0 10px;
       padding-left: 24px;
-      color: #59463c;
-      font-size: 14px;
+      color: #050404;
+      font-size: 16px;
       line-height: 1.45
     }
 
@@ -171,7 +171,7 @@
     }
 
     .silver-tier li:before {
-      color: #74787d
+      color: #5a6879
     }
 
     .gold-tier li:before {
