@@ -1,6 +1,5 @@
 from datetime import date, timedelta, datetime
 import os
-import re
 import smtplib
 from email.message import EmailMessage
 from functools import wraps
@@ -9,24 +8,53 @@ from io import BytesIO
 from flask import Flask, request, jsonify, session, send_from_directory, send_file, Response, redirect
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.middleware.proxy_fix import ProxyFix
 import mysql.connector
 from mysql.connector import Error
 
 BASE_DIR = Path(__file__).resolve().parent
 app = Flask(__name__, static_folder=None)
-app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key")
+APP_ENV = os.environ.get("APP_ENV", "development").strip().lower()
+SECRET_KEY = os.environ.get("SECRET_KEY", "").strip()
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin").strip()
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "").strip()
+
+if APP_ENV == "production":
+    if len(SECRET_KEY) < 32 or SECRET_KEY.upper().startswith("REPLACE_"):
+        raise RuntimeError("Set SECRET_KEY to a random value of at least 32 characters in /etc/sarvathaa.env")
+    if len(ADMIN_PASSWORD) < 12 or ADMIN_PASSWORD.upper().startswith("REPLACE_"):
+        raise RuntimeError("Set ADMIN_PASSWORD to a unique password of at least 12 characters in /etc/sarvathaa.env")
+    if not ADMIN_USERNAME or ADMIN_USERNAME.upper().startswith("REPLACE_"):
+        raise RuntimeError("Set ADMIN_USERNAME in /etc/sarvathaa.env")
+    if not os.environ.get("DB_PASSWORD") or os.environ["DB_PASSWORD"].upper().startswith("REPLACE_"):
+        raise RuntimeError("Set DB_PASSWORD to the database user's password in /etc/sarvathaa.env")
+
+app.secret_key = SECRET_KEY or "development-only-secret-key"
 app.permanent_session_lifetime = timedelta(days=7)
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-CORS(app, supports_credentials=True)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SECURE"] = os.environ.get("COOKIE_SECURE", "true" if APP_ENV == "production" else "false").lower() in ("1", "true", "yes")
+app.config["SESSION_COOKIE_NAME"] = "sarvathaa_session"
+app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
+
+if os.environ.get("BEHIND_PROXY", "false").lower() in ("1", "true", "yes"):
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
+CORS_ORIGINS = [origin.strip() for origin in os.environ.get(
+    "CORS_ORIGINS",
+    "http://127.0.0.1:5000,http://localhost:5000"
+).split(",") if origin.strip()]
+CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
+
 
 DB_CONFIG = {
     "host": os.environ.get("DB_HOST", "localhost"),
     "user": os.environ.get("DB_USER", "root"),
-    "password": os.environ.get("DB_PASSWORD", "Sujith@2005"),
+    "password": os.environ.get("DB_PASSWORD", ""),
     "database": os.environ.get("DB_NAME", "sarvathaa_courses"),
+    "port": int(os.environ.get("DB_PORT", "3306")),
+    "connection_timeout": 10,
 }
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "sarvathaa_admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Sarvathaa@2026!")
 
 EMAIL_CONFIG = {
     "host": os.environ.get("SMTP_HOST", ""),
@@ -123,10 +151,13 @@ def send_course_login_email(login):
 
 
 COURSES = {
-    "silver": {"title": "Silver Plan", "price": "₹2,999", "image": "assets/savaratha/inside pics/bake to business.jpeg"},
-    "bronze": {"title": "Bronze Plan", "price": "₹3,999", "image": "assets/savaratha/inside pics/bake to business.jpeg"},
-    "gold": {"title": "Gold Plan", "price": "₹5,999", "image": "assets/savaratha/inside pics/bake to business.jpeg"},
-    "platinum": {"title": "Platinum Plan", "price": "₹9,999", "image": "assets/savaratha/inside pics/bake to business.jpeg"},
+    "piping": {"title": "Piping Masterclass", "price": "₹499", "image": "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=900&q=80"},
+    "chocolate-garnish": {"title": "Chocolate Garnish", "price": "₹599", "image": "https://images.unsplash.com/photo-1511381939415-e44015466834?auto=format&fit=crop&w=900&q=80"},
+    "baking": {"title": "Baking - Cakes & Cookies", "price": "₹999", "image": "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=900&q=80"},
+    "icing-cake": {"title": "Icing Cake", "price": "₹699", "image": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=900&q=80"},
+    "creams": {"title": "Creams", "price": "₹499", "image": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80"},
+    "mousselines": {"title": "Mousselines", "price": "₹599", "image": "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=900&q=80"},
+    "ganache": {"title": "Ganache", "price": "₹599", "image": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=900&q=80"},
 }
 
 # Course lesson structure. Replace the embed links with your real private/unlisted course video links later.
@@ -137,13 +168,16 @@ COURSES = {
 # These files are NOT public assets; Flask opens them only after student login,
 # completed mandatory form, active course access, and correct purchased course.
 COURSE_DOCUMENT_FILES = {
-    "silver": "silver-plan-notes.pdf",
-    "bronze": "bronze-plan-notes.pdf",
-    "gold": "gold-plan-notes.pdf",
-    "platinum": "platinum-plan-notes.pdf",
+    "piping": "piping.pdf",
+    "chocolate-garnish": "chocolate-garnish.pdf",
+    "baking": "baking.pdf",
+    "icing-cake": "icing-cake.pdf",
+    "creams": "creams.pdf",
+    "mousselines": "mousselines.pdf",
+    "ganache": "ganache.pdf",
 }
 
-COURSE_DOCUMENT_PAGE_COUNTS = {"silver": 2, "bronze": 2, "gold": 2, "platinum": 2}
+COURSE_DOCUMENT_PAGE_COUNTS = {'piping': 2, 'chocolate-garnish': 2, 'baking': 2, 'icing-cake': 2, 'creams': 2, 'mousselines': 2, 'ganache': 2}
 
 
 # Excel-style course calculators shown inside each paid course login.
@@ -236,72 +270,40 @@ COURSE_CALCULATIONS = {
 
 
 COURSE_LESSONS = {
-    plan: [
-        {"title": f"{label} - Sample Lesson 1: Baking Foundations", "url": "assets/videos/sample-lesson-1.mp4"},
-        {"title": f"{label} - Sample Lesson 2: Decoration Basics", "url": "assets/videos/sample-lesson-2.mp4"},
-    ]
-    for plan, label in [
-        ("silver", "Silver Plan"),
-        ("bronze", "Bronze Plan"),
-        ("gold", "Gold Plan"),
-        ("platinum", "Platinum Plan"),
-    ]
-}
-
-
-def quiz_question(question, options, answer):
-    return {"question": question, "options": options, "answer": answer}
-
-
-# Ten plan-specific questions per plan. The correct answer index stays only on the server.
-PLAN_QUIZZES = {
-    "silver": [
-        quiz_question("Why should an oven be preheated before baking?", ["To cool the baking tin", "To reach the required baking temperature", "To reduce ingredient weight", "To avoid mixing"], 1),
-        quiz_question("Which tool gives the most accurate flour measurement?", ["Digital weighing scale", "Serving spoon", "Tea cup", "Cake knife"], 0),
-        quiz_question("What is the main purpose of baking powder?", ["Add colour", "Make the product rise", "Reduce sweetness", "Cool the batter"], 1),
-        quiz_question("Why are room-temperature ingredients often recommended for cake batter?", ["They combine more evenly", "They remove all sugar", "They stop the oven", "They make flour heavier"], 0),
-        quiz_question("What happens during the creaming method?", ["Flour and water are boiled", "Butter and sugar trap air", "Cake is frozen", "Chocolate is tempered"], 1),
-        quiz_question("Which is a reliable sign that a basic cake is baked?", ["The centre is liquid", "A skewer comes out clean", "The tin is cold", "The batter becomes darker before baking"], 1),
-        quiz_question("Why should a cake cool before icing?", ["Warm cake can melt the icing", "Cooling increases raw flour", "Cooling removes the cake", "Warm cake is always harder"], 0),
-        quiz_question("What should be done before handling ingredients?", ["Touch the phone", "Wash and dry hands", "Open all packages", "Taste every ingredient"], 1),
-        quiz_question("Why is parchment paper used in a cake tin?", ["To increase oven heat", "To help prevent sticking", "To add sugar", "To replace the cake tin"], 1),
-        quiz_question("What improves consistency when repeating a recipe?", ["Changing quantities each time", "Using weighed ingredients and the same method", "Ignoring oven temperature", "Mixing without timing"], 1),
+    "piping": [
+        {"title": "Piping Lesson 1 - Tools, Nozzles & Bag Setup", "url": "assets/videos/piping-lesson-1.mp4"},
+        {"title": "Piping Lesson 2 - Pressure Control Practice", "url": "assets/videos/piping-lesson-2.mp4"},
+        {"title": "Piping Lesson 3 - Rosettes, Borders & Writing", "url": "assets/videos/piping-lesson-3.mp4"},
+        {"title": "Piping Lesson 4 - Cupcake & Cake Finishing", "url": "assets/videos/piping-lesson-4.mp4"},
     ],
-    "bronze": [
-        quiz_question("Which cream condition is best for whipping?", ["Warm cream", "Cold cream", "Boiling cream", "Frozen solid cream"], 1),
-        quiz_question("What is the purpose of a crumb coat?", ["Trap loose crumbs before final icing", "Bake the cake again", "Make the cake raw", "Replace the filling"], 0),
-        quiz_question("What is the safest way to melt chocolate?", ["Use gentle controlled heat", "Place it directly on a high flame", "Add water immediately", "Leave it in sunlight"], 0),
-        quiz_question("Why should cookie dough sometimes be chilled?", ["To control excessive spreading", "To remove all flavour", "To melt the fat", "To increase oven size"], 0),
-        quiz_question("What helps produce an even piping line?", ["Uneven pressure", "Steady pressure and movement", "A torn piping bag", "Very warm cream"], 1),
-        quiz_question("Why must raw and ready-to-eat ingredients be kept separate?", ["To prevent cross-contamination", "To increase product price", "To reduce storage space", "To change colour"], 0),
-        quiz_question("What does ganache mainly combine?", ["Chocolate and cream", "Flour and salt", "Water and yeast", "Oil and baking soda"], 0),
-        quiz_question("Why should finished cream products be refrigerated when required?", ["To support food safety and stability", "To make them heavier", "To remove decoration", "To increase oven temperature"], 0),
-        quiz_question("What information should be placed on a stored preparation?", ["Only the bowl colour", "Product name and preparation date", "Employee nickname only", "Nothing"], 1),
-        quiz_question("Why is a digital scale preferred for recipe production?", ["It improves repeatable accuracy", "It changes flavour automatically", "It bakes the product", "It replaces hygiene"], 0),
+    "chocolate-garnish": [
+        {"title": "Chocolate Garnish Lesson 1 - Tempering Basics", "url": "assets/videos/chocolate-garnish-lesson-1.mp4"},
+        {"title": "Chocolate Garnish Lesson 2 - Curls, Shavings & Designs", "url": "assets/videos/chocolate-garnish-lesson-2.mp4"},
+        {"title": "Chocolate Garnish Lesson 3 - Cake & Dessert Decoration", "url": "assets/videos/chocolate-garnish-lesson-3.mp4"},
     ],
-    "gold": [
-        quiz_question("Why is chocolate tempered?", ["To create stable shine and snap", "To add flour", "To freeze the mould", "To remove cocoa"], 0),
-        quiz_question("What does folding achieve in a light mousse mixture?", ["Preserves incorporated air", "Removes all air", "Boils the cream", "Hardens the bowl"], 0),
-        quiz_question("What is a smooth ganache an example of?", ["A stable emulsion", "Dry fermentation", "Frozen flour", "Caramel powder"], 0),
-        quiz_question("What helps create sharp cake edges?", ["Controlled chilling and careful final coating", "Pouring water on icing", "Using a warm cake", "Skipping the crumb coat"], 0),
-        quiz_question("When doubling a tested recipe, what should be checked?", ["Only the product name", "Ingredient scaling and equipment capacity", "The wall colour", "Nothing"], 1),
-        quiz_question("What should product costing include?", ["Ingredients only", "Ingredients, packaging, labour and overheads", "Decoration colour only", "Customer name only"], 1),
-        quiz_question("Why is shelf-life testing important?", ["To establish safe quality duration", "To make the oven larger", "To avoid labels", "To remove packaging"], 0),
-        quiz_question("What is the benefit of a production schedule?", ["Coordinates batches, time and resources", "Increases random work", "Removes quality checks", "Stops inventory records"], 0),
-        quiz_question("How should allergen information be handled?", ["Clearly identified and communicated", "Always hidden", "Removed from records", "Guessed after sale"], 0),
-        quiz_question("What best supports professional product consistency?", ["Standard recipes and recorded processes", "Changing method every batch", "No measurements", "Unplanned oven settings"], 0),
+    "baking": [
+        {"title": "Baking Lesson 1 - Ingredients & Measurement", "url": "assets/videos/baking-lesson-1.mp4"},
+        {"title": "Baking Lesson 2 - Cake Batter Mixing Method", "url": "assets/videos/baking-lesson-2.mp4"},
+        {"title": "Baking Lesson 3 - Sponge Cake Baking Process", "url": "assets/videos/baking-lesson-3.mp4"},
+        {"title": "Baking Lesson 4 - Cookie Dough & Oven Timing", "url": "assets/videos/baking-lesson-4.mp4"},
     ],
-    "platinum": [
-        quiz_question("How is food-cost percentage commonly calculated?", ["Food cost divided by selling price multiplied by 100", "Selling price divided by quantity only", "Profit plus tax", "Packaging divided by time"], 0),
-        quiz_question("What is gross profit for one product?", ["Selling price minus direct product cost", "Selling price plus direct cost", "Only the tax amount", "Total stock quantity"], 0),
-        quiz_question("What should a sustainable selling price cover?", ["Costs, overheads and planned profit", "Ingredients only", "Packaging colour only", "Competitor name only"], 0),
-        quiz_question("What does FIFO mean in inventory?", ["First In, First Out", "Final Item, Final Order", "Fast Invoice, Fast Output", "Food Inspection For Oven"], 0),
-        quiz_question("What is a reorder level?", ["The stock point that triggers replenishment", "The final customer price", "A cake decoration style", "The daily attendance total"], 0),
-        quiz_question("Why maintain batch records?", ["For traceability and quality control", "To hide production", "To remove expiry dates", "To avoid measurements"], 0),
-        quiz_question("What is the purpose of brand positioning?", ["Define how the business should be understood by target customers", "Increase oven temperature", "Replace product quality", "Avoid customer research"], 0),
-        quiz_question("What should suitable bakery packaging protect?", ["Product safety, freshness and presentation", "Only the invoice", "Only the logo", "The oven tray"], 0),
-        quiz_question("What is a good first response to a customer complaint?", ["Listen, record facts and respond professionally", "Delete the customer record", "Argue immediately", "Ignore the complaint"], 0),
-        quiz_question("What is the break-even point?", ["Where total revenue equals total costs", "Where inventory becomes zero", "Where every sale is profit", "Where packaging is free"], 0),
+    "icing-cake": [
+        {"title": "Icing Cake Lesson 1 - Crumb Coat & Base Layer", "url": "assets/videos/icing-cake-lesson-1.mp4"},
+        {"title": "Icing Cake Lesson 2 - Smooth Finish Technique", "url": "assets/videos/icing-cake-lesson-2.mp4"},
+        {"title": "Icing Cake Lesson 3 - Decoration & Final Finish", "url": "assets/videos/icing-cake-lesson-3.mp4"},
+    ],
+    "creams": [
+        {"title": "Creams Lesson 1 - Whipping Cream Consistency", "url": "assets/videos/creams-lesson-1.mp4"},
+        {"title": "Creams Lesson 2 - Filling, Layering & Storage", "url": "assets/videos/creams-lesson-2.mp4"},
+    ],
+    "mousselines": [
+        {"title": "Mousselines Lesson 1 - Cream Preparation", "url": "assets/videos/mousselines-lesson-1.mp4"},
+        {"title": "Mousselines Lesson 2 - Filling & Dessert Usage", "url": "assets/videos/mousselines-lesson-2.mp4"},
+    ],
+    "ganache": [
+        {"title": "Ganache Lesson 1 - Dark Chocolate Ganache", "url": "assets/videos/ganache-lesson-1.mp4"},
+        {"title": "Ganache Lesson 2 - Drip Cake Finish", "url": "assets/videos/ganache-lesson-2.mp4"},
+        {"title": "Ganache Lesson 3 - Truffle Filling", "url": "assets/videos/ganache-lesson-3.mp4"},
     ],
 }
 
@@ -341,11 +343,9 @@ def get_student_courses(cur, student_id, active_only=True):
             "is_active": bool(row.get('is_active')),
             "is_expired": bool(row.get('expiry_date') and row['expiry_date'] < today),
             "videos": videos,
-            "document_url": f"/course-document/{key}" if COURSE_DOCUMENT_FILES.get(key) else "",
+            "document_url": f"/course-document/{key}",
             "document_file": COURSE_DOCUMENT_FILES.get(key, ""),
             "has_document": bool(COURSE_DOCUMENT_FILES.get(key)),
-            "quiz_url": f"/api/quiz/{key}" if PLAN_QUIZZES.get(key) else "",
-            "quiz_question_count": len(PLAN_QUIZZES.get(key, [])),
             "calculation": COURSE_CALCULATIONS.get(key, {"mode_label": "No. of batches", "default_count": 1, "items": []}),
         })
     return courses
@@ -361,7 +361,9 @@ def has_active_course(cur, student_id):
 
 
 def init_db():
-    con = mysql.connector.connect(host=DB_CONFIG["host"], user=DB_CONFIG["user"], password=DB_CONFIG["password"])
+    if not DB_CONFIG["database"].replace('_', '').isalnum():
+        raise RuntimeError("DB_NAME must contain only letters, numbers and underscores")
+    con = mysql.connector.connect(**{k: v for k, v in DB_CONFIG.items() if k != "database"})
     cur = con.cursor()
     cur.execute(f"CREATE DATABASE IF NOT EXISTS {DB_CONFIG['database']} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     con.database = DB_CONFIG["database"]
@@ -388,8 +390,9 @@ def init_db():
     ]:
         try:
             cur.execute(statement)
-        except Error:
-            pass
+        except Error as error:
+            if error.errno != 1060:  # Only an already-existing column is safe to ignore.
+                raise
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS student_courses (
@@ -471,28 +474,18 @@ def init_db():
             INDEX idx_purchase_status (status)
         )
     """)
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS quiz_attempts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            student_id INT NOT NULL,
-            plan_key VARCHAR(50) NOT NULL,
-            score INT NOT NULL,
-            total_questions INT NOT NULL,
-            percentage INT NOT NULL,
-            passed BOOLEAN DEFAULT FALSE,
-            attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            INDEX idx_quiz_student_plan (student_id, plan_key),
-            CONSTRAINT fk_quiz_attempt_student FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
-        )
-    """)
     con.commit()
     cur.close()
     con.close()
 
 @app.after_request
 def add_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
     # Avoid old browser back-cache showing admin/student pages after logout.
-    if request.path in ['/admin.html', '/admin-login.html', '/my-courses.html', '/course-login.html'] or request.path.startswith('/api/'):
+    if request.path in ['/admin', '/admin.html', '/admin-login', '/admin-login.html', '/my-courses', '/my-courses.html', '/course-login', '/course-login.html'] or request.path.startswith(('/api/', '/course-document', '/assets/videos/')):
         response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
@@ -526,6 +519,10 @@ def get_logged_student():
 
 @app.route('/assets/videos/<path:filename>')
 def protected_course_video(filename):
+    requested_video = Path(filename).name
+    if requested_video == 'preview-demo.mp4':
+        return send_from_directory(BASE_DIR / 'assets' / 'videos', requested_video)
+
     student, error = get_logged_student()
     if error:
         return error
@@ -542,7 +539,6 @@ def protected_course_video(filename):
             continue
         for lesson in COURSE_LESSONS.get(course.get('course_key'), []):
             allowed_videos.add(Path(lesson['url']).name)
-    requested_video = Path(filename).name
     if requested_video not in allowed_videos:
         return jsonify({"ok": False, "message": "This video is not included in your paid course access."}), 403
 
@@ -649,22 +645,27 @@ def protected_course_document_page(course_key, page_no):
 def home():
     return send_from_directory(BASE_DIR, 'index.html')
 
+@app.route('/health')
+def health():
+    return jsonify({"ok": True, "service": "sarvathaa"})
+
 @app.route('/admin')
 @app.route('/admin.html')
 def admin_page():
     if not session.get('admin_logged_in'):
-        return redirect('/course-login.html#admin-login')
+        return redirect('/course-login.html#admin')
     return send_from_directory(BASE_DIR, 'admin.html')
 
 @app.route('/admin-login')
 @app.route('/admin-login.html')
 def admin_login_page():
-    return redirect('/course-login.html#admin-login')
+    # Always show login page so you can login again after changing admin credentials.
+    return send_from_directory(BASE_DIR, 'admin-login.html')
 
 @app.route('/admin-logout', methods=['GET', 'POST'])
 def admin_logout_page():
     session.pop('admin_logged_in', None)
-    return redirect('/course-login.html#admin-login')
+    return redirect('/course-login.html#admin')
 
 
 @app.route('/admin-setup-db')
@@ -682,48 +683,59 @@ def admin_setup_db():
 
 @app.route('/<path:filename>')
 def pages(filename):
-    # Support both URL styles:
-    #   /about.html and /about
-    #   /course-login.html and /course-login
-    # But keep admin protected.
     filename = filename.strip('/')
-
-    admin_pages = {'admin', 'admin.html'}
-    if filename in admin_pages and not session.get('admin_logged_in'):
-        return redirect('/course-login.html#admin-login')
-
-    if filename in {'admin-login', 'admin-login.html'}:
-        return redirect('/course-login.html#admin-login')
-
-    # Never expose backend source, SQL, raw course PDFs or rendered private-note files.
-    blocked_suffixes = {'.py', '.sql', '.txt', '.pdf', '.env'}
-    if filename.startswith('private_course_docs/') or Path(filename).suffix.lower() in blocked_suffixes:
-        return 'File not found', 404
-
-    direct_path = BASE_DIR / filename
-    if filename.startswith('assets/') and direct_path.exists() and direct_path.is_file():
+    # Preserve old bookmarks after the practice page was renamed.
+    if filename in {'baking-skill-center', 'baking-skill-center.html'}:
+        return redirect('/baking-practice-center.html', code=301)
+    # Only these exact root icon files are public; keep private files blocked.
+    public_icons = {
+        'favicon.ico', 'favicon.png', 'favicon-16x16.png',
+        'favicon-32x32.png', 'favicon-48x48.png', 'apple-touch-icon.png'
+    }
+    if filename in public_icons:
         return send_from_directory(BASE_DIR, filename)
 
-    if '/' not in filename and filename.endswith('.html') and direct_path.exists() and direct_path.is_file():
-        return send_from_directory(BASE_DIR, filename)
+    public_html = {
+        'baking-ingredients.html', 'baking-equipment.html',
+        'baking-tools-moulds.html', 'baking-packaging.html',
+        'Bake to business.html', 'baking-items-detail.html', 'baking-items.html',
+        'baking-practice-center.html', 'contact.html', 'course-access.html',
+        'course-login.html', 'direct-supply-solutions.html', 'incubation-center.html',
+        'index.html', 'my-courses.html', 'practice-baking.html',
+        'practice-chocolate-garnish.html', 'practice-icing-cake.html',
+        'practice-piping.html', 'recorded-videos.html', 'training-center.html',
+        'robots.txt', 'sitemap.xml'
+    }
 
-    # If user types URL without .html, serve matching html file.
-    html_path = BASE_DIR / f'{filename}.html'
-    if '/' not in filename and html_path.exists() and html_path.is_file():
-        return send_from_directory(BASE_DIR, f'{filename}.html')
-
-    # Do not silently show home page for unknown static asset paths.
-    if '.' in filename:
+    # Public assets are allowed for local Flask use. Paid videos have their own
+    # protected route above and are never exposed by this fallback.
+    if filename.startswith('assets/') and not filename.startswith('assets/videos/'):
+        assets_dir = (BASE_DIR / 'assets').resolve()
+        requested = (BASE_DIR / filename).resolve()
+        try:
+            requested.relative_to(assets_dir)
+        except ValueError:
+            return 'File not found', 404
+        if requested.is_file():
+            return send_from_directory(BASE_DIR, filename)
         return 'File not found', 404
 
-    return send_from_directory(BASE_DIR, 'index.html')
+    if filename in public_html:
+        return send_from_directory(BASE_DIR, filename)
+
+    html_name = f'{filename}.html'
+    if html_name in public_html:
+        return send_from_directory(BASE_DIR, html_name)
+
+    # Never expose source code, environment files, SQL or private documents.
+    return 'File not found', 404
 
 
 @app.errorhandler(500)
 def internal_error(error):
     # Show a clear JSON message for API errors instead of a blank Server Error page.
     if request.path.startswith('/api/'):
-        return jsonify({"ok": False, "message": "Server error. Check Flask terminal red error and confirm MySQL database/tables are updated."}), 500
+        return jsonify({"ok": False, "message": "The server could not load this data. Please retry. If it continues, check the Sarvathaa service logs and MySQL setup."}), 500
     return "Server error. Check Flask terminal red error and restart the Flask app.", 500
 
 
@@ -747,10 +759,9 @@ def course_purchase_request():
         return jsonify({"ok": False, "message": "Please select a course."}), 400
 
     allowed_courses = {
-        "Silver Plan": "silver",
-        "Bronze Plan": "bronze",
-        "Gold Plan": "gold",
-        "Platinum Plan": "platinum",
+        "Silver Course": "silver",
+        "Gold Course": "gold",
+        "Platinum Course": "platinum",
     }
     if course not in allowed_courses:
         return jsonify({"ok": False, "message": "Invalid course selected."}), 400
@@ -865,91 +876,6 @@ def my_courses():
     })
 
 
-def require_student_plan(plan_key):
-    student, error = get_logged_student()
-    if error:
-        return None, error
-    if not student.get('profile_completed'):
-        return None, (jsonify({"ok": False, "message": "Complete the student information form before opening the quiz."}), 403)
-    if plan_key not in PLAN_QUIZZES:
-        return None, (jsonify({"ok": False, "message": "Quiz not found."}), 404)
-    con = get_db(); cur = con.cursor(dictionary=True)
-    cur.execute("""
-        SELECT id FROM student_courses
-        WHERE student_id=%s AND course_key=%s AND is_active=1 AND expiry_date >= CURDATE()
-        LIMIT 1
-    """, (student['id'], plan_key))
-    allowed = cur.fetchone() is not None
-    cur.close(); con.close()
-    if not allowed:
-        return None, (jsonify({"ok": False, "message": "This quiz is not included in your activated plan."}), 403)
-    return student, None
-
-
-@app.route('/api/quiz/<plan_key>')
-def get_plan_quiz(plan_key):
-    plan_key = (plan_key or '').strip().lower()
-    student, error = require_student_plan(plan_key)
-    if error:
-        return error
-    con = get_db(); cur = con.cursor(dictionary=True)
-    cur.execute("""
-        SELECT MAX(percentage) AS best_percentage,
-               MAX(CASE WHEN passed=1 THEN 1 ELSE 0 END) AS ever_passed,
-               COUNT(*) AS attempt_count
-        FROM quiz_attempts WHERE student_id=%s AND plan_key=%s
-    """, (student['id'], plan_key))
-    progress = cur.fetchone() or {}
-    cur.close(); con.close()
-    questions = [
-        {"id": index, "question": item["question"], "options": item["options"]}
-        for index, item in enumerate(PLAN_QUIZZES[plan_key])
-    ]
-    return jsonify({
-        "ok": True,
-        "plan_key": plan_key,
-        "plan_title": COURSES[plan_key]["title"],
-        "passing_percentage": 70,
-        "questions": questions,
-        "best_percentage": int(progress.get('best_percentage') or 0),
-        "passed": bool(progress.get('ever_passed')),
-        "attempt_count": int(progress.get('attempt_count') or 0),
-    })
-
-
-@app.route('/api/quiz/<plan_key>/submit', methods=['POST'])
-def submit_plan_quiz(plan_key):
-    plan_key = (plan_key or '').strip().lower()
-    student, error = require_student_plan(plan_key)
-    if error:
-        return error
-    data = request.get_json(force=True) or {}
-    answers = data.get('answers')
-    questions = PLAN_QUIZZES[plan_key]
-    if not isinstance(answers, list) or len(answers) != len(questions):
-        return jsonify({"ok": False, "message": "Please answer all 10 questions before submitting."}), 400
-    try:
-        normalized = [int(answer) for answer in answers]
-    except (TypeError, ValueError):
-        return jsonify({"ok": False, "message": "Invalid quiz answers."}), 400
-    if any(answer < 0 or answer >= len(questions[index]['options']) for index, answer in enumerate(normalized)):
-        return jsonify({"ok": False, "message": "Invalid quiz option selected."}), 400
-    score = sum(1 for index, answer in enumerate(normalized) if answer == questions[index]['answer'])
-    total = len(questions)
-    percentage = round((score / total) * 100)
-    passed = percentage >= 70
-    con = get_db(); cur = con.cursor()
-    cur.execute("""
-        INSERT INTO quiz_attempts (student_id,plan_key,score,total_questions,percentage,passed)
-        VALUES (%s,%s,%s,%s,%s,%s)
-    """, (student['id'], plan_key, score, total, percentage, passed))
-    con.commit(); cur.close(); con.close()
-    return jsonify({
-        "ok": True, "score": score, "total": total, "percentage": percentage, "passed": passed,
-        "message": "Congratulations! You passed the plan quiz." if passed else "You need 70% to pass. Review the notes and try again."
-    })
-
-
 @app.route('/api/student/profile', methods=['GET'])
 def student_profile_get():
     student, error = get_logged_student()
@@ -1020,7 +946,7 @@ def logout():
 @app.route('/api/admin-login', methods=['POST'])
 def admin_login():
     data = request.get_json(force=True)
-    if (data.get('username') or '').strip() == ADMIN_USERNAME and (data.get('password') or '').strip() == ADMIN_PASSWORD:
+    if ADMIN_PASSWORD and (data.get('username') or '').strip() == ADMIN_USERNAME and (data.get('password') or '').strip() == ADMIN_PASSWORD:
         session.permanent = True
         session['admin_logged_in'] = True
         return jsonify({"ok": True})
@@ -1122,78 +1048,6 @@ def admin_delete_coupon(coupon_id):
     return jsonify({"ok": True, "message": "Coupon deleted."})
 
 
-@app.route('/api/admin/purchase-requests')
-@admin_required
-def admin_purchase_requests():
-    con = get_db(); cur = con.cursor(dictionary=True)
-    cur.execute("""
-        SELECT id,name,phone,email,course_key,original_price,coupon_code,
-               discount_amount,final_price,status,created_at
-        FROM course_purchase_requests
-        ORDER BY CASE WHEN status='pending' THEN 0 ELSE 1 END, id DESC
-    """)
-    rows = cur.fetchall(); cur.close(); con.close()
-    for row in rows:
-        row['created_at'] = row['created_at'].isoformat() if row.get('created_at') else ''
-        row['course_title'] = COURSES.get(row.get('course_key'), {}).get('title', row.get('course_key', ''))
-    return jsonify({"ok": True, "requests": rows})
-
-
-@app.route('/api/admin/purchase-requests/<int:request_id>/activate', methods=['POST'])
-@admin_required
-def activate_purchase_request(request_id):
-    data = request.get_json(force=True) or {}
-    username = (data.get('username') or '').strip()
-    password = data.get('password') or ''
-    expiry_date = (data.get('expiry_date') or '').strip()
-    if not username or len(password) < 6 or not expiry_date:
-        return jsonify({"ok": False, "message": "Username, password (minimum 6 characters) and expiry date are required."}), 400
-    try:
-        con = get_db(); cur = con.cursor(dictionary=True)
-        cur.execute("SELECT * FROM course_purchase_requests WHERE id=%s FOR UPDATE", (request_id,))
-        purchase = cur.fetchone()
-        if not purchase:
-            cur.close(); con.close()
-            return jsonify({"ok": False, "message": "Purchase request not found."}), 404
-        if purchase.get('status') == 'activated':
-            cur.close(); con.close()
-            return jsonify({"ok": False, "message": "This request is already activated."}), 400
-        course_key = (purchase.get('course_key') or '').strip()
-        if course_key not in COURSES:
-            cur.close(); con.close()
-            return jsonify({"ok": False, "message": "This request does not contain a valid plan."}), 400
-
-        password_hash = generate_password_hash(password)
-        cur.execute("""
-            INSERT INTO students
-            (name,email,phone,username,password_hash,access_password,course_key,expiry_date,is_active)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,1)
-        """, (purchase['name'], purchase.get('email') or '', purchase['phone'], username,
-              password_hash, password, course_key, expiry_date))
-        student_id = cur.lastrowid
-        cur.execute("""
-            INSERT INTO student_courses (student_id,course_key,expiry_date,is_active)
-            VALUES (%s,%s,%s,1)
-        """, (student_id, course_key, expiry_date))
-        cur.execute("UPDATE course_purchase_requests SET status='activated' WHERE id=%s", (request_id,))
-        con.commit(); cur.close(); con.close()
-
-        login = {
-            "name": purchase['name'], "email": purchase.get('email') or '', "phone": purchase['phone'],
-            "username": username, "password": password, "course_key": course_key,
-            "course_title": COURSES[course_key]['title'], "expiry_date": expiry_date,
-        }
-        email_sent, email_message = send_course_login_email(login)
-        return jsonify({"ok": True, "message": "Student login created and plan activated.",
-                        "login": login, "email_sent": email_sent, "email_message": email_message})
-    except Error as e:
-        try:
-            con.rollback(); cur.close(); con.close()
-        except Exception:
-            pass
-        return jsonify({"ok": False, "message": str(e)}), 400
-
-
 @app.route('/api/admin/students')
 @admin_required
 def list_students():
@@ -1249,10 +1103,6 @@ def add_student():
     required = ['name','phone','username','password','course_key','expiry_date']
     if not all(str(data.get(k) or '').strip() for k in required):
         return jsonify({"ok": False, "message": "Please fill all fields"}), 400
-    if len(data.get('password') or '') < 6:
-        return jsonify({"ok": False, "message": "Password must contain at least 6 characters."}), 400
-    if data.get('course_key') not in COURSES:
-        return jsonify({"ok": False, "message": "Please select Silver, Bronze, Gold or Platinum plan."}), 400
     password_hash = generate_password_hash(data['password'])
     try:
         con = get_db(); cur = con.cursor()
@@ -1295,8 +1145,6 @@ def admin_add_student_course(student_id):
     expiry_date = (data.get('expiry_date') or '').strip()
     if not course_key or not expiry_date:
         return jsonify({"ok": False, "message": "Select course and expiry date."}), 400
-    if course_key not in COURSES:
-        return jsonify({"ok": False, "message": "Invalid plan selected."}), 400
     try:
         con = get_db(); cur = con.cursor(dictionary=True)
         cur.execute("SELECT id,name,email,phone,username,access_password FROM students WHERE id=%s", (student_id,))
@@ -1482,6 +1330,34 @@ def admin_logout():
     session.pop('admin_logged_in', None)
     return jsonify({"ok": True, "message": "Logged out"})
 
+@app.cli.command("init-db")
+def init_db_command():
+    """Create missing tables and migrate supported older schemas; back up first."""
+    init_db()
+    print("Database setup completed.")
+
+
+@app.cli.command("check-db")
+def check_db_command():
+    """Read-only connectivity and required-column check; does not change data."""
+    connection = get_db()
+    cursor = connection.cursor()
+    try:
+        for query in (
+            "SELECT id, access_password, profile_completed FROM students LIMIT 0",
+            "SELECT student_id, course_key, expiry_date, is_active FROM student_courses LIMIT 0",
+            "SELECT student_id, full_name, updated_at FROM student_profiles LIMIT 0",
+            "SELECT id, code, discount_value FROM coupons LIMIT 0",
+            "SELECT id, name, status FROM course_purchase_requests LIMIT 0",
+        ):
+            cursor.execute(query)
+            cursor.fetchall()
+        print("MySQL connection and required tables/columns are ready.")
+    finally:
+        cursor.close()
+        connection.close()
+
+
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run(debug=APP_ENV == 'development', host='127.0.0.1', port=5000)

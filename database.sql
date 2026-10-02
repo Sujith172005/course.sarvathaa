@@ -68,7 +68,7 @@ VALUES
 ('SARVATHAA10', 'percent', 10, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 6 MONTH), TRUE);
 
 
--- Course purchase requests submitted from Silver / Bronze / Gold / Platinum plan forms
+-- Course purchase requests submitted from Silver / Gold / Platinum buy forms
 CREATE TABLE IF NOT EXISTS course_purchase_requests (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(120) NOT NULL,
@@ -84,18 +84,4 @@ CREATE TABLE IF NOT EXISTS course_purchase_requests (
   INDEX idx_purchase_phone (phone),
   INDEX idx_purchase_course (course_key),
   INDEX idx_purchase_status (status)
-);
-
--- Stores every plan quiz attempt. A score of 70% or above passes.
-CREATE TABLE IF NOT EXISTS quiz_attempts (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  student_id INT NOT NULL,
-  plan_key VARCHAR(50) NOT NULL,
-  score INT NOT NULL,
-  total_questions INT NOT NULL,
-  percentage INT NOT NULL,
-  passed BOOLEAN DEFAULT FALSE,
-  attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_quiz_student_plan (student_id, plan_key),
-  CONSTRAINT fk_quiz_attempt_student FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );

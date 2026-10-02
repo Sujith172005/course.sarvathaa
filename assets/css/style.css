@@ -266,11 +266,11 @@ img {
 }
 
 .container {
-  max-width: 1290px;
+  max-width: 1400px;
   margin: auto
 }
 .sec-container{
-  max-width: 1290px;
+  max-width: 1400px;
   margin: auto
 }
 
@@ -312,7 +312,7 @@ img {
   background: rgba(255, 255, 255, .82);
   border: 1px solid rgba(196, 45, 99, .12);
   border-radius: var(--radius);
-  padding: 8px;
+  padding: 3px 10px;
   box-shadow: var(--shadow);
   transition: .25s;
 }
@@ -448,6 +448,9 @@ img {
   position: fixed;
   right: 18px;
   bottom: 22px;
+  box-sizing: border-box;
+  max-width: calc(100vw - 36px);
+  white-space: nowrap;
   background: #25d366;
   color: #fff;
   border-radius: 999px;
@@ -737,8 +740,8 @@ body {
 .grid > .service-card .icon {
   grid-column: 1;
   grid-row: 1;
-  width: 62px;
-  height: 62px;
+  width: 58px;
+  height: 55px;
   margin: 0;
 }
 
@@ -807,8 +810,9 @@ body {
   }
 
   .whatsapp {
-    right: 12px;
+    right: max(16px, env(safe-area-inset-right));
     bottom: 16px;
+    max-width: calc(100vw - 32px);
     padding: 12px 14px
   }
 
@@ -1667,7 +1671,7 @@ body {
 }
 
 .footer-grid-contact {
-  max-width: 1180px;
+  max-width: 1280px;
   margin: auto;
   display: grid;
   grid-template-columns: 1.25fr 1fr 1fr 1.25fr;
@@ -5770,76 +5774,6 @@ body {
   }
 }
 
-/* Plan-specific protected quiz */
-.plan-quiz-card{grid-column:1/-1;margin-top:22px;padding:24px;background:#fff;border:1px solid rgba(122,67,27,.16);border-radius:20px;box-shadow:0 12px 30px rgba(72,39,19,.08)}
-.plan-quiz-intro{display:flex;justify-content:space-between;align-items:center;gap:20px}.plan-quiz-intro h3{margin:5px 0 6px;color:#4b2d1f}.plan-quiz-intro p{margin:0;color:#7a5d49}
-.plan-quiz-content{margin-top:16px}.quiz-history{padding:10px 13px;margin-bottom:10px;background:#fff5e9;border-radius:10px;color:#6b442d}.quiz-history.passed{background:#eaf8ee;color:#176b38}
-
-/* Compact quiz: one clean row per question, without nested cards. */
-.plan-quiz-form{display:grid;gap:0}
-.quiz-question-card{
-  min-width:0;
-  margin:0;
-  padding:14px 2px 15px;
-  border:0;
-  border-radius:0;
-  background:transparent;
-}
-.quiz-question-card:last-of-type{border-bottom:0}
-.quiz-question-card legend{
-  display:flex;
-  align-items:flex-start;
-  gap:9px;
-  width:100%;
-  padding:0;
-  font-weight:800;
-  color:#4b2d1f;
-  line-height:1.4;
-}
-.quiz-question-card legend span{
-  display:inline-grid;
-  place-items:center;
-  flex:0 0 24px;
-  width:24px;
-  height:24px;
-  border-radius:50%;
-  background:#9d3153;
-  color:#fff;
-  font-size:12px;
-}
-.quiz-options{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(240px,420px));
-  column-gap:36px;
-  row-gap:8px;
-  justify-content:start;
-  margin:12px 0 0 33px;
-}
-.quiz-options label{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-  padding:4px;
-  border:0;
-  border-radius:7px;
-  background:transparent;
-  line-height:1.35;
-  cursor:pointer;
-}
-.quiz-options label:hover{background:#fff7fa}
-.quiz-options label:has(input:checked){background:#fff1f5;color:#7f2142;font-weight:700}
-.quiz-options input{flex:0 0 auto;margin:2px 0 0;accent-color:#9d3153}
-.quiz-submit-btn{margin-top:16px}
-.quiz-result{margin-top:10px;padding:14px;border-radius:12px}.quiz-result:empty{display:none}.quiz-result.passed{background:#e8f8ed;color:#146c38;border:1px solid #bce6c9}.quiz-result.failed{background:#fff0f0;color:#9a2525;border:1px solid #f0c6c6}
-@media(max-width:700px){
-  .plan-quiz-intro{align-items:stretch;flex-direction:column;gap:12px}
-  .plan-quiz-card{padding:15px}
-  .quiz-question-card{padding:12px 0 13px}
-  .quiz-options{grid-template-columns:1fr;gap:7px;margin:10px 0 0 32px}
-  .quiz-options label{padding:4px 2px}
-}
-
 
 /* =========================================================
    FINAL FIX: Admin table actions visible + Delete button
@@ -6686,16 +6620,11 @@ body {
   font-weight:850;
   box-shadow:0 10px 22px rgba(70,35,20,.06);
 }
-.login-premium-wrap {
-    display: grid;
-    grid-template-columns: 1.45fr 1fr; /* keeps current widths */
-    align-items: stretch;              /* both boxes same height */
-    gap: 46px;
-}
-
-.login-premium-wrap .premium-login-card {
-    height: 100%;
-    box-sizing: border-box;
+.premium-login-card{
+  border-radius:28px !important;
+  padding:30px !important;
+  box-shadow:0 24px 60px rgba(63,32,18,.14) !important;
+  border:1px solid rgba(157,49,83,.14) !important;
 }
 .premium-login-card h2{font-size:1.75rem;margin-bottom:8px;color:#342014;}
 .premium-login-card .course-form{gap:14px;}
@@ -6834,12 +6763,6 @@ body {
   .course-learning-area .course-video-lessons-wrap{grid-template-columns:1fr;}
   .student-course-header{align-items:flex-start;flex-direction:column;}
   .course-access-meta{justify-content:flex-start;}
-}
-@media (max-width: 768px) {
-    .login-premium-wrap {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
 }
 @media(max-width:640px){
   .course-login-premium{padding:34px 0 44px;}
@@ -8304,12 +8227,12 @@ body {
 }
 
 .sarvathaa-about-container {
-  max-width: 1280px;
+  max-width: 1400px;
 }
 
 .sarvathaa-about-heading {
   text-align: center;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 .sarvathaa-about-heading .section-kicker {
@@ -8364,7 +8287,7 @@ body {
   background: #fff;
   border: 1px solid rgba(196,45,99,.12);
   box-shadow: 0 18px 45px rgba(93,35,55,.12);
-  margin-top: 20px;
+  margin-top: 14px;
 }
 
 .sarvathaa-incubation-image-card img{
@@ -8643,8 +8566,8 @@ body {
 .grid > .service-card:first-child .icon {
   grid-column: 1;
   grid-row: 1;
-  width: 62px;
-  height: 62px;
+  width: 58px;
+  height: 55px;
   margin: 0;
 }
 
@@ -8957,7 +8880,7 @@ body {
   border-radius: 24px;
   padding: 2px 30px 30px;
   box-shadow: var(--shadow);
-  max-width: 1050px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 
@@ -9028,7 +8951,7 @@ body {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  margin-left: 6px;
+  margin-left: 0;
   color: #25D366 !important;
   text-decoration: none !important;
   vertical-align: middle;
@@ -9760,89 +9683,112 @@ margin-top: 10px;
     }
 }
 
-/* Direct Supply Solutions: keep category contact buttons at the card bottom. */
-.direct-supply-categories .supply-contact {
-  margin-top: auto;
-  padding-top: 20px;
-  width: 100%;
-}
-.direct-supply-categories .supply-whatsapp-button {
+/* Home main areas: full images, natural text spacing, aligned buttons. */
+.main-area-cards > .image-card {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  min-height: 46px;
-  box-sizing: border-box;
-  padding: 12px 10px;
-  border: 1px solid #25d366;
-  border-radius: 10px;
-  background: #25d366;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color .2s ease;
+  flex-direction: column;
+  min-width: 0;
 }
-.direct-supply-categories .supply-whatsapp-button:hover {
-  background: #0f6230;
-  border-color: #0f6230;
-  color: #fff;
-}
-.direct-supply-categories .supply-whatsapp-button:focus-visible {
-  outline: 3px solid #137b3c;
-  outline-offset: 3px;
-}
-.direct-supply-categories .supply-whatsapp-button i {
+.main-area-cards > .image-card > .item-photo {
+  display: block;
   flex-shrink: 0;
-  font-size: 20px;
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
 }
-@media (min-width: 601px) and (max-width: 1100px) {
-  .direct-supply-categories .skills-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
+.main-area-cards > .image-card:hover > .real-photo {
+  transform: none;
+}
+.main-area-cards > .image-card > .content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  padding: 17px;
+}
+.main-area-cards .content > h3 {
+  margin: 0 0 12px;
+}
+.main-area-cards .content > p {
+  text-align: justify;
+  line-height: 1.65;
+  overflow-wrap: break-word;
+  margin: 0 0 20px;
+}
+.main-area-cards .content > .btn {
+  margin-top: auto;
+  align-self: flex-start;
 }
 
-/* Direct Supply Solutions: simple contact below the nine advantages. */
-.supply-enquiry-section {
-  padding: 16px 0 28px;
-  text-align: center;
+
+/* FINAL Q&A WHATSAPP BUTTON - compact, aligned with 6px spacing */
+.incubation-qa-section .incubation-qa-contact p {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin: 20px auto 1px !important;
 }
-.supply-enquiry-section h2 {
-  margin: 0 0 8px;
-  color: var(--ink);
-  font-size: clamp(22px, 2.5vw, 28px);
-  line-height: 1.35;
+
+.incubation-qa-section .incubation-qa-whatsapp {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  width: 145px !important;
+  min-height: 50px !important;
+  margin: 0 !important;
+  padding: 8px 16px !important;
+  box-sizing: border-box !important;
+  background: #25D366 !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 13px !important;
+  box-shadow: 0 7px 18px rgba(37, 211, 102, .25) !important;
+  text-decoration: none !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease !important;
 }
-.supply-enquiry-section p {
-  margin: 0 0 20px;
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.6;
+
+.incubation-qa-section .incubation-qa-whatsapp i {
+  color: #fff !important;
+  font-size: 32px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  transform: none !important;
 }
-.supply-enquiry-whatsapp {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  max-width: 100%;
-  min-height: 48px;
-  padding: 12px 22px;
-  border-radius: 10px;
-  background: #25d366;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.4;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color .2s ease;
+
+.incubation-qa-section .incubation-qa-whatsapp span {
+  color: #fff !important;
+  line-height: 1 !important;
 }
-.supply-enquiry-whatsapp i { flex-shrink: 0; font-size: 21px; }
-.supply-enquiry-whatsapp:hover { background: #0f6230; color: #fff; }
-.supply-enquiry-whatsapp:focus-visible {
-  outline: 3px solid #137b3c;
-  outline-offset: 4px;
+
+.incubation-qa-section .incubation-qa-whatsapp:hover {
+  background: #20bd5a !important;
+  color: #fff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 26px rgba(37, 211, 102, .35) !important;
+}
+
+@media (max-width: 600px) {
+  .incubation-qa-section .incubation-qa-contact p {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .incubation-qa-section .incubation-qa-whatsapp {
+    width: 165px !important;
+    min-height: 48px !important;
+    font-size: 16px !important;
+  }
+
+  .incubation-qa-section .incubation-qa-whatsapp i {
+    font-size: 27px !important;
+  }
 }

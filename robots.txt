@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /my-courses.html
+Disallow: /course-access.html
+Disallow: /practice-
+Disallow: /assets/videos/
+
+Sitemap: https://sarvathaa.com/sitemap.xml

@@ -1,0 +1,28 @@
+/* Match white image canvases to their cards on the two affected pages. */
+.baking-practice-page .facilities-grid > .service-card,
+.baking-practice-page .facilities-grid > .service-card:hover {
+  background: #fff !important;
+}
+.baking-practice-page .facilities-grid .facility-image {
+  background: #fff;
+}
+.baking-essentials-section .supply-row,
+.baking-essentials-section .supply-row-content,
+.baking-essentials-section .supply-images,
+.baking-essentials-section .supply-images figure,
+.baking-essentials-section .supply-images img {
+  background: #fff;
+}
+
+/* Only Raw Material Area and Baking Tools & Moulds. */
+.baking-practice-page .facilities-grid > .service-card .facility-image.facility-image-compact {
+      display: block;
+    width: 89%;
+    height: 180px;
+    object-fit: fill;
+    object-position: center;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border-radius: var(--radius) var(--radius) 0 0;
+}

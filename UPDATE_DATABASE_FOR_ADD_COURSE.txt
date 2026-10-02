@@ -1,7 +1,15 @@
-IMPORTANT: Run this once on VPS MySQL if your old database is already created.
+EXISTING VPS DATABASE
 
-mysql -u sarvathaa_user -p sarvathaa_courses < database.sql
+Read section B of VPS_DEPLOYMENT_GUIDE.md and back up the live database first.
+Do not recreate/drop it or change its existing user password.
 
-This creates the new student_courses table.
-Old students will be copied into student_courses automatically, so existing logins continue working.
-After this update, admin can click Add Course for an existing student and keep the same username/password.
+Read-only check using the service's environment file:
+sudo bash /var/www/sarvathaa/deploy/manage.sh check-db
+
+Only for missing tables/columns, after a confirmed backup:
+sudo bash /var/www/sarvathaa/deploy/manage.sh init-db
+sudo bash /var/www/sarvathaa/deploy/manage.sh check-db
+
+Setup adds missing tables, supported columns and old one-course records to
+student_courses. Do not use it as a workaround for wrong credentials or a
+connection failure. See the guide for the full safe update procedure.

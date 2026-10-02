@@ -31,22 +31,3 @@ No website can 100% stop screenshots or screen recording. This setup blocks norm
 
 VPS restart after uploading/changing app.py:
 sudo systemctl restart sarvathaa
-PLAN DOCUMENT FILES
-===================
-
-Replace these sample PDFs with your final notes using the same filenames:
-
-- private_course_docs/silver-plan-notes.pdf
-- private_course_docs/bronze-plan-notes.pdf
-- private_course_docs/gold-plan-notes.pdf
-- private_course_docs/platinum-plan-notes.pdf
-
-Then render each PDF page to PNG and place it in its matching folder:
-
-- private_course_docs/rendered/silver-plan-notes/
-- private_course_docs/rendered/bronze-plan-notes/
-- private_course_docs/rendered/gold-plan-notes/
-- private_course_docs/rendered/platinum-plan-notes/
-
-Update COURSE_DOCUMENT_PAGE_COUNTS in app.py if the final PDF has more than two pages.
-Do not place course PDFs inside assets because assets are public website files.

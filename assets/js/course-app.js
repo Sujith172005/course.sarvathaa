@@ -1,6 +1,6 @@
 const API_BASE = '';
 const LOGIN_PAGE = `${window.location.origin}/course-login.html`;
-const SARVATHAA_WHATSAPP_NUMBER = '917904336537';
+const SARVATHAA_WHATSAPP_NUMBER = '919886916067';
 
 const onboardingOptions = {
   whyCourse: ['Self learning', 'Improve baking skill', 'Start earning from home', 'Upgrade professional skill'],
@@ -33,10 +33,34 @@ function whatsappHref(phone, message){
 }
 
 async function api(path, options={}){
-  const res = await fetch(API_BASE + path, {headers:{'Content-Type':'application/json'}, credentials:'include', ...options});
-  const data = await res.json().catch(()=>({ok:false,message:'Server error'}));
-  if(!res.ok) throw data;
-  return data;
+  const controller = new AbortController();
+  const timer = setTimeout(()=>controller.abort(), 30000);
+  try{
+    const res = await fetch(API_BASE + path, {
+      ...options, credentials:'same-origin', cache:'no-store', signal:controller.signal,
+      headers:{'Content-Type':'application/json', ...(options.headers || {})}
+    });
+    let data;
+    try{ data = await res.json(); }
+    catch(_){
+      const error = new Error('The server returned an invalid response. Please retry or check the VPS application service.');
+      error.status = res.ok ? 502 : res.status;
+      throw error;
+    }
+    if(!res.ok){
+      const error = new Error(data.message || `Request failed (${res.status}).`);
+      error.status = res.status;
+      throw error;
+    }
+    return data;
+  }catch(error){
+    if(error.status) throw error;
+    const networkError = new Error(error.name === 'AbortError'
+      ? 'The request timed out. Please retry; your login has not been cleared.'
+      : 'Unable to reach the server. Check your connection and retry.');
+    networkError.status = 0;
+    throw networkError;
+  }finally{ clearTimeout(timer); }
 }
 
 function esc(value){
@@ -47,30 +71,51 @@ function optionTags(values, selected=''){
 }
 function courseSelectOptions(selected=''){
   const list = [
-    ['silver','Silver Plan'],
-    ['bronze','Bronze Plan'],
-    ['gold','Gold Plan'],
-    ['platinum','Platinum Plan']
+    ['piping','Piping Masterclass'],
+    ['chocolate-garnish','Chocolate Garnish'],
+    ['baking','Baking - Cakes & Cookies'],
+    ['icing-cake','Icing Cake'],
+    ['creams','Creams'],
+    ['mousselines','Mousselines'],
+    ['ganache','Ganache']
   ];
   return list.map(([key,title])=>`<option value="${esc(key)}" ${key===selected?'selected':''}>${esc(title)}</option>`).join('');
 }
 
 async function isAdminLoggedIn(){
-  try{ const data = await api('/api/admin/check'); return !!data.ok; }
-  catch(_){ return false; }
+  const data = await api('/api/admin/check');
+  return !!data.ok;
+}
+let adminRedirectPending = false;
+function redirectToAdminLogin(){
+  if(adminRedirectPending) return;
+  adminRedirectPending = true;
+  location.replace('/course-login.html#admin');
+}
+function showAdminNotice(message){
+  const notice = document.getElementById('adminStatus');
+  const text = document.getElementById('adminStatusMessage');
+  if(notice && text){ text.textContent = message; notice.hidden = false; }
 }
 async function protectAdminPage(){
+  try{
+    if(!await isAdminLoggedIn()){ redirectToAdminLogin(); return false; }
+    return true;
+  }catch(error){
+    if(error.status === 401) redirectToAdminLogin();
+    else showAdminNotice(error.message);
+    return false;
+  }
+}
+async function initAdminDashboard(){
   if(!document.getElementById('studentsTable')) return;
-  const loggedIn = await isAdminLoggedIn();
-  if(!loggedIn) location.replace('admin-login.html');
+  if(!await protectAdminPage()) return;
+  const notice = document.getElementById('adminStatus');
+  if(notice) notice.hidden = true;
+  await Promise.all([loadStudents(), loadCoupons()]);
 }
-async function redirectAdminLoginIfAlreadyLogged(){
-  if(!document.getElementById('adminLoginForm')) return;
-  const loggedIn = await isAdminLoggedIn();
-  if(loggedIn) location.replace('/admin');
-}
-redirectAdminLoginIfAlreadyLogged();
-protectAdminPage();
+// Login pages stay on screen until the user submits the form. Never bounce
+// automatically back to a dashboard whose data request may be failing.
 
 const studentLoginForm = document.getElementById('studentLoginForm');
 studentLoginForm?.addEventListener('submit', async (e)=>{
@@ -127,58 +172,6 @@ function renderCourseDocumentLink(course){
       </div>
     </div>
   </details>`;
-}
-
-function renderPlanQuiz(course){
-  if(!course || !course.quiz_url) return '';
-  const key=esc(course.key || course.course_key || '');
-  const title=esc(course.title || 'Plan');
-  return `<section class="plan-quiz-card" id="plan-quiz-${key}" data-plan-key="${key}">
-    <div class="plan-quiz-intro">
-      <div><span class="eyebrow">Plan Knowledge Check</span><h3>${title} Quiz</h3><p>Answer all 10 plan-specific questions. You need 70% to pass.</p></div>
-      <button class="btn load-plan-quiz-btn" type="button" data-plan-key="${key}">Start 10-Question Quiz</button>
-    </div>
-    <div class="plan-quiz-content"></div>
-  </section>`;
-}
-
-async function loadPlanQuiz(planKey){
-  const card=document.getElementById(`plan-quiz-${planKey}`);
-  if(!card) return;
-  const content=card.querySelector('.plan-quiz-content');
-  content.innerHTML='<p class="dashboard-loading">Loading your quiz...</p>';
-  try{
-    const data=await api(`/api/quiz/${encodeURIComponent(planKey)}`);
-    const history=data.attempt_count ? `<div class="quiz-history ${data.passed?'passed':''}">Previous attempts: <strong>${data.attempt_count}</strong> · Best score: <strong>${data.best_percentage}%</strong>${data.passed?' · Passed':''}</div>` : '';
-    const questions=(data.questions || []).map((q,index)=>`<fieldset class="quiz-question-card">
-      <legend><span>${index+1}</span>${esc(q.question)}</legend>
-      <div class="quiz-options">${(q.options || []).map((option,optionIndex)=>`<label><input required type="radio" name="quiz-${planKey}-${q.id}" value="${optionIndex}"><span>${esc(option)}</span></label>`).join('')}</div>
-    </fieldset>`).join('');
-    content.innerHTML=`${history}<form class="plan-quiz-form" data-plan-key="${esc(planKey)}">${questions}<button class="btn quiz-submit-btn" type="submit">Submit Quiz</button><div class="quiz-result" role="status"></div></form>`;
-    content.querySelector('.plan-quiz-form').addEventListener('submit', submitPlanQuiz);
-    card.querySelector('.load-plan-quiz-btn').textContent='Restart Quiz';
-  }catch(err){ content.innerHTML=`<p class="quiz-result failed">${esc(err.message || 'Quiz could not be loaded.')}</p>`; }
-}
-
-async function submitPlanQuiz(event){
-  event.preventDefault();
-  const form=event.currentTarget;
-  const planKey=form.dataset.planKey;
-  const groups=[...form.querySelectorAll('.quiz-question-card')];
-  const answers=groups.map(group=>group.querySelector('input[type="radio"]:checked')?.value);
-  const result=form.querySelector('.quiz-result');
-  if(answers.some(value=>value===undefined)){
-    result.className='quiz-result failed'; result.textContent='Please answer all 10 questions.'; return;
-  }
-  const button=form.querySelector('.quiz-submit-btn');
-  button.disabled=true; button.textContent='Checking answers...';
-  try{
-    const data=await api(`/api/quiz/${encodeURIComponent(planKey)}/submit`,{method:'POST',body:JSON.stringify({answers:answers.map(Number)})});
-    result.className=`quiz-result ${data.passed?'passed':'failed'}`;
-    result.innerHTML=`<strong>${data.score}/${data.total} - ${data.percentage}%</strong><br>${esc(data.message)}`;
-    if(data.passed) form.querySelectorAll('input').forEach(input=>input.disabled=true);
-  }catch(err){ result.className='quiz-result failed'; result.textContent=err.message || 'Quiz could not be submitted.'; }
-  finally{ button.disabled=false; button.textContent='Submit Quiz'; }
 }
 
 function numberOrZero(value){
@@ -647,7 +640,7 @@ async function loadMyCourses(openVideoIndex=null){
       }).join('');
       return `<div class="student-course-header dashboard-full-width">
           <div>
-            <span class="course-access-badge">✓ ${esc(c.title || 'Plan')} Accessed</span>
+            <span class="course-access-badge">Paid Access</span>
             <h2>${esc(c.title || 'Your Paid Course')}</h2>
             <p>${profileCompleted ? 'Watch your lessons and open course notes whenever needed.' : 'Complete the form above to unlock your videos.'}</p>
           </div>
@@ -657,7 +650,6 @@ async function loadMyCourses(openVideoIndex=null){
           <div class="course-area-head"><span>🎥 Videos</span><strong>${courseVideos.length} Lessons</strong></div>
           <div class="course-video-lessons-wrap">${lessonCards}</div>
           ${profileCompleted ? `<div class="course-support-grid">${renderCourseDocumentLink(c)}</div>` : ''}
-          ${profileCompleted ? renderPlanQuiz(c) : ''}
         </div>`;
     }).join('');
 
@@ -667,8 +659,8 @@ async function loadMyCourses(openVideoIndex=null){
         <img src="${esc(x.image)}" alt="${esc(x.title)}">
         <div class="course-body">
           <h3>🔒 ${esc(x.title)}</h3>
-          <p>Not activated. Videos and notes for this plan are hidden from your login.</p>
-          <a class="btn secondary" target="_blank" href="https://wa.me/919886916067?text=${encodeURIComponent('Hi Sarvathaa Team, I want to activate another plan. Plan: ' + x.title + '. Please add it to my existing login.')}" >Request This Plan</a>
+          <p>This course is locked. Buy this course and admin can add it to your same username/password.</p>
+          <a class="btn secondary" target="_blank" href="https://wa.me/919886916067?text=${encodeURIComponent('Hi Sarvathaa Team, I want to buy another course video access. Course: ' + x.title + '. Please add it to my existing login.')}" >Request on WhatsApp</a>
         </div>
       </div>`).join('');
 
@@ -678,12 +670,11 @@ async function loadMyCourses(openVideoIndex=null){
       </div>
       ${paidCourseSections}
       ${profileCompleted ? buildOneCourseCalculator(purchasedCourses) : ''}
-      <div class="section-title locked-title dashboard-full-width"><span>Other Plans</span><h2>Plans Not Activated</h2><p>You can see the plan names, but their course content remains hidden until admin activates access.</p></div>
+      <div class="section-title locked-title dashboard-full-width"><span>Other Courses</span><h2>Request More Course Access</h2><p>For another course, pay and ask admin to add it to this same login.</p></div>
       ${lockedOtherCourses}`;
 
     bindStudentForm(openVideoIndex ?? '0-0');
     bindCourseCalculators(box);
-    box.querySelectorAll('.load-plan-quiz-btn').forEach(button=>button.addEventListener('click',()=>loadPlanQuiz(button.dataset.planKey)));
     box.querySelectorAll('.start-onboarding-btn, .start-onboarding-box').forEach(btn=>btn.addEventListener('click', (event)=>{
       event.stopPropagation();
       const formCard = document.getElementById('inlineStudentFormCard');
@@ -711,18 +702,35 @@ document.getElementById('logoutBtn')?.addEventListener('click', async()=>{await 
 const adminLoginForm=document.getElementById('adminLoginForm');
 adminLoginForm?.addEventListener('submit', async(e)=>{
   e.preventDefault();
+  const submit = adminLoginForm.querySelector('button[type="submit"]');
+  if(submit.disabled) return;
+  submit.disabled = true;
   const msg=document.getElementById('adminLoginMessage'); msg.textContent='Checking...';
-  try{ await api('/api/admin-login',{method:'POST',body:JSON.stringify({username:adminUsername.value.trim(), password:adminPassword.value})}); location.href='/admin'; }
+  try{
+    await api('/api/admin-login',{method:'POST',body:JSON.stringify({
+      username:document.getElementById('adminUsername').value.trim(),
+      password:document.getElementById('adminPassword').value
+    })});
+    if(!await isAdminLoggedIn()){
+      msg.textContent='Login was accepted, but the browser did not keep the session. Use HTTPS on the same domain and allow cookies.';
+      return;
+    }
+    location.replace('/admin');
+  }
   catch(err){ msg.textContent=err.message || 'Admin login failed'; }
+  finally{ submit.disabled = false; }
 });
 
 function getAdminSearchQuery(){ return (document.getElementById('studentSearchInput')?.value || '').trim(); }
 
+let studentsRequestNumber = 0;
 async function loadStudents(){
   const tbody=document.getElementById('studentsTable'); if(!tbody) return;
+  const requestNumber = ++studentsRequestNumber;
   try{
     const query = getAdminSearchQuery();
     const data=await api('/api/admin/students' + (query ? `?q=${encodeURIComponent(query)}` : ''));
+    if(requestNumber !== studentsRequestNumber) return;
     tbody.innerHTML=data.students.map(s=>{
       const savedPassword = s.access_password || '';
       const loginMessage = buildLoginMessage({...s, password: savedPassword});
@@ -738,9 +746,12 @@ async function loadStudents(){
         <td class="actions-cell"><div class="table-actions">${studentWa}<button class="btn mini-btn secondary view-student-btn" type="button" data-id="${s.id}">View/Edit</button><button class="btn mini-btn add-course-btn" type="button" data-id="${s.id}">Add Course</button><button class="btn mini-btn danger delete-student-btn" type="button" data-id="${s.id}" data-name="${esc(s.name)}">Delete</button></div></td>
       </tr>`;
     }).join('') || '<tr><td colspan="8">No students found</td></tr>';
-  }catch(err){ location.href='admin-login.html'; }
+  }catch(err){
+    if(requestNumber !== studentsRequestNumber) return;
+    if(err.status === 401){ redirectToAdminLogin(); return; }
+    tbody.innerHTML=`<tr><td colspan="8"><p role="alert">Student list could not load. ${esc(err.message || 'Please retry.')}</p><button class="btn secondary retry-students-btn" type="button">Retry student list</button></td></tr>`;
+  }
 }
-loadStudents();
 
 function ensureAdminModal(){
   let modal=document.getElementById('adminStudentModal');
@@ -817,6 +828,7 @@ document.getElementById('exportStudentsBtn')?.addEventListener('click', ()=>{
 });
 
 document.getElementById('studentsTable')?.addEventListener('click', async (e)=>{
+  if(e.target.closest('.retry-students-btn')){ await loadStudents(); return; }
   const viewBtn=e.target.closest('.view-student-btn');
   if(viewBtn){
     try{ const data=await api(`/api/admin/students/${viewBtn.dataset.id}`); renderStudentEditModal(data.student); }
@@ -851,59 +863,17 @@ addStudentForm?.addEventListener('submit', async(e)=>{
     const mailBody = encodeURIComponent(courseLoginText);
     const emailStatus = data.email_message ? `<p class="email-status ${data.email_sent ? 'success' : 'warning'}"><strong>Email:</strong> ${esc(data.email_message)}</p>` : '';
     const studentEmailBtn = login.email ? `<a class="btn secondary" target="_blank" href="mailto:${encodeURIComponent(login.email)}?subject=${mailSubject}&body=${mailBody}">Open Email</a>` : '';
-    msg.innerHTML = `<div class="created-login-box"><h3>✅ Login Created</h3><p><strong>Username:</strong> ${esc(login.username)}</p><p><strong>Password:</strong> ${esc(login.password)}</p><p><strong>Course:</strong> ${esc(login.course_title)}</p><p><strong>Login Link:</strong> ${esc(LOGIN_PAGE)}</p>${emailStatus}<div class="created-login-actions"><a class="btn" target="_blank" href="${whatsappHref(login.phone, courseLoginText)}">Send to Student WhatsApp</a>${studentEmailBtn}<a class="btn secondary" target="_blank" href="${whatsappHref(SARVATHAA_WHATSAPP_NUMBER, courseLoginText)}">Send to 7904336537</a></div></div>`;
+    msg.innerHTML = `<div class="created-login-box"><h3>✅ Login Created</h3><p><strong>Username:</strong> ${esc(login.username)}</p><p><strong>Password:</strong> ${esc(login.password)}</p><p><strong>Course:</strong> ${esc(login.course_title)}</p><p><strong>Login Link:</strong> ${esc(LOGIN_PAGE)}</p>${emailStatus}<div class="created-login-actions"><a class="btn" target="_blank" href="${whatsappHref(login.phone, courseLoginText)}">Send to Student WhatsApp</a>${studentEmailBtn}<a class="btn secondary" target="_blank" href="${whatsappHref(SARVATHAA_WHATSAPP_NUMBER, courseLoginText)}">Send to 9886916067</a></div></div>`;
     addStudentForm.reset(); setDefaultExpiry(); loadStudents();
   }
   catch(err){ msg.textContent=err.message || 'Unable to save'; }
 });
 
-document.getElementById('adminLogoutBtn')?.addEventListener('click', async()=>{await api('/api/admin-logout',{method:'POST'}); location.href='admin-login.html';});
-
-async function loadPurchaseRequests(){
-  const tbody=document.getElementById('purchaseRequestsTable');
-  if(!tbody) return;
-  try{
-    const data=await api('/api/admin/purchase-requests');
-    tbody.innerHTML=(data.requests || []).map(r=>`<tr>
-      <td>#${r.id}<br><small>${esc((r.created_at || '').slice(0,10))}</small></td>
-      <td><strong>${esc(r.name)}</strong><br>${esc(r.phone)}<br><small>${esc(r.email || '')}</small></td>
-      <td>${esc(r.course_title)}</td>
-      <td>${esc(r.final_price || r.original_price || '')}</td>
-      <td><span class="${r.status==='activated'?'status-active':'status-pending'}">${esc(r.status)}</span></td>
-      <td>${r.status==='pending' ? `<button class="btn mini-btn activate-request-btn" type="button" data-id="${r.id}" data-name="${esc(r.name)}" data-plan="${esc(r.course_title)}">Create Login</button>` : 'Completed'}</td>
-    </tr>`).join('') || '<tr><td colspan="6">No course requests yet.</td></tr>';
-  }catch(err){ tbody.innerHTML=`<tr><td colspan="6">${esc(err.message || 'Unable to load requests')}</td></tr>`; }
-}
-
-document.getElementById('purchaseRequestsTable')?.addEventListener('click', (e)=>{
-  const btn=e.target.closest('.activate-request-btn');
-  if(!btn) return;
-  const modal=ensureAdminModal();
-  modal.innerHTML=`<div class="admin-modal-card compact-admin-modal">
-    <div class="admin-modal-head"><div><span>Activate Requested Plan</span><h2>${esc(btn.dataset.name)}</h2><p>${esc(btn.dataset.plan)}</p></div><button class="modal-close-btn" type="button">×</button></div>
-    <form id="activateRequestForm" class="course-form compact-course-form">
-      <label>Student Username<input id="requestUsername" required autocomplete="off" placeholder="Example: silver001"></label>
-      <label>Create Password<input id="requestPassword" required type="password" minlength="6" placeholder="Minimum 6 characters"></label>
-      <label>Access Valid Until<input id="requestExpiry" required type="date"></label>
-      <button class="btn" type="submit">Create Password & Activate Plan</button>
-      <p class="form-message" id="activateRequestMessage"></p>
-    </form>
-  </div>`;
-  modal.querySelector('.modal-close-btn').addEventListener('click', ()=>modal.remove());
-  const expiry=modal.querySelector('#requestExpiry');
-  const d=new Date(); d.setFullYear(d.getFullYear()+1); expiry.value=d.toISOString().slice(0,10);
-  modal.querySelector('#activateRequestForm').addEventListener('submit', async(event)=>{
-    event.preventDefault();
-    const msg=modal.querySelector('#activateRequestMessage'); msg.textContent='Creating login...';
-    try{
-      const data=await api(`/api/admin/purchase-requests/${btn.dataset.id}/activate`, {method:'POST', body:JSON.stringify({username:requestUsername.value.trim(),password:requestPassword.value,expiry_date:requestExpiry.value})});
-      const login=data.login; const loginText=buildLoginMessage(login);
-      msg.innerHTML=`<div class="created-login-box"><h3>✅ Plan Activated</h3><p><strong>Username:</strong> ${esc(login.username)}</p><p><strong>Password:</strong> ${esc(login.password)}</p><p><strong>Plan:</strong> ${esc(login.course_title)}</p><p><strong>Valid Until:</strong> ${esc(login.expiry_date)}</p><a class="btn" target="_blank" href="${whatsappHref(login.phone, loginText)}">Send Login on WhatsApp</a></div>`;
-      await loadPurchaseRequests(); await loadStudents();
-    }catch(err){ msg.textContent=err.message || 'Unable to activate plan'; }
-  });
+document.getElementById('adminLogoutBtn')?.addEventListener('click', async()=>{
+  try{ await api('/api/admin-logout',{method:'POST'}); location.replace('/course-login.html#admin'); }
+  catch(error){ showAdminNotice('Logout could not be confirmed. ' + error.message); }
 });
-loadPurchaseRequests();
+document.getElementById('adminRetryBtn')?.addEventListener('click', initAdminDashboard);
 
 function addMonthsISO(months){
   const d = new Date();
@@ -930,7 +900,10 @@ async function loadCoupons(){
         <div class="coupon-actions"><span class="${statusClass}">${status}</span><button class="btn mini-btn secondary toggle-coupon-btn" type="button" data-id="${c.id}" data-active="${c.is_active ? '0':'1'}">${c.is_active ? 'Turn Off':'Turn On'}</button><button class="btn mini-btn danger delete-coupon-btn" type="button" data-id="${c.id}" data-code="${esc(c.code)}">Delete</button></div>
       </div>`;
     }).join('') || '<p class="muted">No coupons added yet.</p>';
-  }catch(err){ list.innerHTML='<p class="muted">Coupon list not loaded. Check database table.</p>'; }
+  }catch(err){
+    if(err.status === 401){ redirectToAdminLogin(); return; }
+    list.innerHTML=`<p role="alert">Coupon list could not load. ${esc(err.message || 'Please retry.')}</p><button class="btn secondary retry-coupons-btn" type="button">Retry coupons</button>`;
+  }
 }
 const couponForm=document.getElementById('couponForm');
 couponForm?.addEventListener('submit', async(e)=>{
@@ -953,6 +926,7 @@ couponForm?.addEventListener('submit', async(e)=>{
   }catch(err){ msg.textContent=err.message || 'Unable to save coupon'; }
 });
 document.getElementById('couponList')?.addEventListener('click', async(e)=>{
+  if(e.target.closest('.retry-coupons-btn')){ await loadCoupons(); return; }
   const toggle=e.target.closest('.toggle-coupon-btn');
   if(toggle){
     try{ await api(`/api/admin/coupons/${toggle.dataset.id}/toggle`,{method:'POST',body:JSON.stringify({is_active: toggle.dataset.active === '1'})}); await loadCoupons(); }
@@ -967,6 +941,6 @@ document.getElementById('couponList')?.addEventListener('click', async(e)=>{
   }
 });
 setupCouponDefaults();
-loadCoupons();
+initAdminDashboard();
 function setDefaultExpiry(){ const expiryInput=document.getElementById('studentExpiryDate'); if(expiryInput){ const d=new Date(); d.setFullYear(d.getFullYear()+1); expiryInput.value=d.toISOString().slice(0,10); }}
 setDefaultExpiry();

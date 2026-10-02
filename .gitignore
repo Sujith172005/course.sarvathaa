@@ -1,0 +1,24 @@
+.env
+.env.*
+!.env.example
+*.env
+*.pem
+*.key
+*.zip
+backups/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.log
+*.xlsx
+assets/videos/*
+!assets/videos/.gitkeep
+!assets/videos/preview-demo.mp4
+
+# Course PDFs and rendered pages are needed at runtime and remain included.
+# Keep this repository PRIVATE. Never commit customer exports or DB backups.

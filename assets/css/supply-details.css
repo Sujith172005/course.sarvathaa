@@ -1,0 +1,368 @@
+/* Dedicated to the four baking catalog pages. */
+body.essentials-detail {
+    margin: 0;
+    min-width: 0
+}
+
+body.essentials-detail *,
+body.essentials-detail *::before,
+body.essentials-detail *::after {
+    box-sizing: border-box
+}
+
+body.essentials-detail .catalog-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #fff;
+    border-bottom: 1px solid #eed7df;
+    box-shadow: 0 4px 18px #8323490d
+}
+
+body.essentials-detail .catalog-nav {
+    max-width: 1400px;
+    width: 100%;
+    margin: auto;
+    padding: 12px 24px;
+    position: relative
+}
+
+body.essentials-detail .catalog-nav .nav-links {
+    position: static !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 190px minmax(0, 1fr) !important;
+    gap: 24px !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    align-items: center
+}
+
+body.essentials-detail .essential-nav-left,
+body.essentials-detail .essential-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    min-width: 0
+}
+
+body.essentials-detail .essential-nav-left {
+    justify-content: flex-end
+}
+
+body.essentials-detail .essential-nav-right {
+    justify-content: flex-start
+}
+
+body.essentials-detail .catalog-nav .nav-links a {
+    position: static !important;
+    transform: none !important;
+    width: auto !important;
+    margin: 0 !important;
+    text-decoration: none;
+    font-family: inherit
+}
+
+body.essentials-detail .catalog-nav .essential-nav-left>a,
+body.essentials-detail .catalog-nav .essential-nav-right>a {
+    font-size: 19px !important;
+    font-weight: 850 !important;
+    line-height: 1.35 !important;
+    color: #2d1720 !important;
+    padding: 12px 0 !important;
+    white-space: nowrap
+}
+
+body.essentials-detail .catalog-nav .nav-links a::before,
+body.essentials-detail .catalog-nav .nav-links a::after {
+    display: none !important
+}
+
+body.essentials-detail .catalog-nav .essential-nav-left>a:hover,
+body.essentials-detail .catalog-nav .essential-nav-right>a:hover {
+    color: #832349 !important
+}
+
+body.essentials-detail .catalog-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important
+}
+
+body.essentials-detail .catalog-brand img {
+    display: block;
+    width: 190px;
+    height: 112px;
+    object-fit: contain
+}
+
+body.essentials-detail .essential-social {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+
+body.essentials-detail .catalog-nav .essential-social>a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px !important;
+    min-width: 44px;
+    height: 44px;
+    line-height: 1;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0 !important
+}
+
+body.essentials-detail .catalog-mobile-brand,
+body.essentials-detail .catalog-nav .hamburger {
+    display: none !important
+}
+
+body.essentials-detail .essential-main {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 36px 24px 64px;
+    min-width: 0
+}
+
+body.essentials-detail .essential-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 54px;
+    padding: 13px 26px;
+    border: 2px solid #832349;
+    border-radius: 12px;
+    background: #832349;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    text-decoration: none;
+    box-shadow: 0 5px 14px #8323491a
+}
+
+body.essentials-detail .essential-back:hover {
+    background: #6e1d3d
+}
+
+body.essentials-detail .essential-back:focus-visible,
+body.essentials-detail .catalog-nav a:focus-visible {
+    outline: 3px solid #c99635;
+    outline-offset: 4px
+}
+
+body.essentials-detail .essential-heading {
+    text-align: center;
+    max-width: 940px;
+    margin: 20px auto
+}
+
+body.essentials-detail .essential-heading h1 {
+    font-size: clamp(32px, 4vw, 46px);
+    color: #832349;
+    margin: 12px 0
+}
+
+body.essentials-detail .essential-heading p {
+    font-size: 18px;
+    line-height: 1.7
+}
+
+body.essentials-detail .essential-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%
+}
+
+body.essentials-detail .essential-product {
+    min-width: 0;
+    border: 1px solid #eed7df;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #fffafc;
+    box-shadow: 0 8px 30px #30111f0a
+}
+
+body.essentials-detail .essential-product>img {
+    display: block;
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    padding: 18px;
+    background: #fff
+}
+
+body.essentials-detail .essential-product>div {
+    padding: 20px
+}
+
+body.essentials-detail .essential-product h2 {
+    color: #832349;
+    font-size: 23px;
+    line-height: 1.35;
+    margin: 0 0 12px;
+    overflow-wrap: break-word
+}
+
+body.essentials-detail .essential-product p {
+    font-size: 18px;
+    line-height: 1.7;
+    margin: 0;
+    overflow-wrap: break-word
+}
+
+body.essentials-detail .footer .footer-grid {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    min-width: 0
+}
+
+body.essentials-detail .footer .footer-grid>div {
+    min-width: 0;
+    overflow-wrap: break-word
+}
+
+@media(min-width:901px) and (max-width:1200px) {
+    body.essentials-detail .catalog-nav .nav-links {
+        grid-template-columns: minmax(0, 1fr) 150px minmax(0, 1fr) !important;
+        gap: 16px !important
+    }
+
+    body.essentials-detail .essential-nav-left,
+    body.essentials-detail .essential-nav-right {
+        gap: 16px
+    }
+
+    body.essentials-detail .catalog-nav .essential-nav-left>a,
+    body.essentials-detail .catalog-nav .essential-nav-right>a {
+        font-size: 18px !important;
+        white-space: normal
+    }
+
+    body.essentials-detail .catalog-brand img {
+        width: 150px;
+        height: 100px
+    }
+}
+
+@media(max-width:1000px) {
+    body.essentials-detail .essential-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+
+@media(max-width:900px) {
+    body.essentials-detail .catalog-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 18px
+    }
+
+    body.essentials-detail .catalog-mobile-brand {
+        display: block !important
+    }
+
+    body.essentials-detail .catalog-mobile-brand img {
+        display: block;
+        width: 145px;
+        height: 85px;
+        object-fit: contain
+    }
+
+    body.essentials-detail .catalog-nav .hamburger {
+        display: block !important;
+        font-size: 28px;
+        background: transparent;
+        border: 0;
+        padding: 10px;
+        color: #832349
+    }
+
+    body.essentials-detail .catalog-nav .nav-links {
+        display: none !important
+    }
+
+    body.essentials-detail .catalog-nav .nav-links.show {
+        display: flex !important;
+        position: absolute !important;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: 100% !important;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px 20px !important;
+        background: #fff !important;
+        box-shadow: 0 8px 18px #30111f1a !important;
+        max-height: 75vh;
+        overflow-y: auto
+    }
+
+    body.essentials-detail .essential-nav-left,
+    body.essentials-detail .essential-nav-right {
+        display: contents
+    }
+
+    body.essentials-detail .catalog-brand {
+        display: none !important
+    }
+
+    body.essentials-detail .catalog-nav .essential-nav-left>a,
+    body.essentials-detail .catalog-nav .essential-nav-right>a {
+        font-size: 21px !important;
+        padding: 12px 6px !important
+    }
+
+    body.essentials-detail .essential-social {
+        justify-content: flex-start
+    }
+
+    body.essentials-detail .essential-main {
+        padding: 28px 18px 48px
+    }
+}
+
+@media(max-width:600px) {
+    body.essentials-detail .essential-grid {
+        grid-template-columns: minmax(0, 1fr)
+    }
+
+    body.essentials-detail .essential-product>img {
+        height: 240px
+    }
+}
+/* Home navbar icon colours, with local SVGs so icons always load. */
+body.essentials-detail .essential-social svg {
+    display: block;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+body.essentials-detail .catalog-nav .essential-social .nav-whatsapp,
+body.essentials-detail .catalog-nav .essential-social .nav-whatsapp:hover,
+body.essentials-detail .catalog-nav .essential-social .nav-whatsapp:focus-visible {
+    color: #25D366 !important;
+}
+body.essentials-detail .catalog-nav .essential-social .nav-whatsapp svg,
+body.essentials-detail .catalog-nav .essential-social .nav-whatsapp svg path {
+    fill: #25D366 !important;
+    color: #25D366 !important;
+}
+body.essentials-detail .essential-social a:hover { opacity: .8; }
+body.essentials-detail .catalog-nav .essential-nav-left>a:hover,
+body.essentials-detail .catalog-nav .essential-nav-right>a:hover { color: #92204a !important; }

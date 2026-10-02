@@ -1,0 +1,54 @@
+SARVATHAA ROUND FAVICON
+
+Uses the existing S emblem cropped from assets/images/sarvathaa-logo.webp.
+The original header logo and website design have not been changed.
+All 15 HTML pages include icon links with a new cache version.
+ICO contains 16, 32 and 48 pixel versions; PNG sizes are also supplied.
+
+IMPORTANT: SARVATHAA USES FLASK
+The original app blocked root favicon URLs. The updated app.py allows only
+the six named favicon files. Private files and course protections stay blocked.
+Your existing Nginx configuration can proxy these icon requests to Flask.
+
+FILES TO DEPLOY
+Copy the complete ZIP contents into your existing local Sarvathaa project.
+Review, commit and push the changed HTML pages, app.py, new favicon files,
+and tests to GitHub. Keep your existing real secrets and database untouched.
+Favicon files must sit beside index.html and app.py, not inside assets.
+
+EXISTING VPS UPDATE
+The supplied deployment configuration uses /var/www/sarvathaa and service
+sarvathaa. Confirm these match your existing VPS installation before running:
+
+cd /var/www/sarvathaa
+sudo -u "$(stat -c '%U' .git)" git remote -v
+sudo -u "$(stat -c '%U' .git)" git status --short
+
+Confirm this is your Sarvathaa repository. If status lists changes or an error,
+stop and preserve those changes. Do not force reset, delete or re-clone it.
+If clean and your update has been pushed to GitHub:
+
+sudo -u "$(stat -c '%U' .git)" git pull --ff-only
+
+Only after pull succeeds, restart Flask to load the new favicon route:
+
+sudo systemctl restart sarvathaa
+sudo systemctl status sarvathaa --no-pager
+
+Do not replace the live Nginx HTTPS configuration or change the database.
+No database migration or new dependency is needed for this favicon change.
+
+CHECK
+Open https://www.sarvathaa.com/favicon.png in a new private browser window.
+It should show the round Sarvathaa emblem. Then open the homepage in a new tab.
+If it returns 404, check that the new icons and app.py were pulled and that
+the correct app service was restarted. This ZIP does not deploy itself.
+
+LOCAL VERIFICATION
+Passed: icon links on 15 pages; icon size and transparent-corner checks;
+static HTTP file delivery; Python syntax; isolated favicon allowlist checks;
+all 12 existing frontend regression checks.
+Full Flask integration tests were not run because the local environment
+lacked Flask dependencies and dependency installation was unavailable.
+Favicon integration tests are included in tests/test_deployment.py for use
+in a configured development environment without connecting a live database.

@@ -1,4 +1,4 @@
-const WHATSAPP_NUMBER = document.body.dataset.whatsappNumber || '917904336537';
+const WHATSAPP_NUMBER = '919886916067';
 
 window.addEventListener('load', () => {
   setTimeout(() => document.querySelector('.preloader')?.classList.add('hide'), 400);
@@ -135,7 +135,7 @@ pageForm?.addEventListener('submit', (e) => {
 (function(){
   const modal = document.getElementById('courseModal');
   const form = document.getElementById('courseBuyForm');
-  if(!modal || !form || modal.dataset.handler === 'plan-request') return;
+  if(!modal || !form) return;
 
   const courseInput = document.getElementById('buyerCourse');
   const priceInput = document.getElementById('buyerPrice');
@@ -326,4 +326,3 @@ Original Course Price: ${price}${couponLine}`;
   slider.addEventListener('mouseleave', restart);
   restart();
 })();
-

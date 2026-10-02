@@ -1,0 +1,328 @@
+/* Each category is one horizontal box: images and products, with contact at right. */
+.baking-essentials-section .container {
+    max-width: 1400px;
+    width: 94%;
+    margin-inline: auto
+}
+
+.baking-essentials-section #direct-supply {
+    scroll-margin-top: 140px
+}
+
+.baking-essentials-section .line-center {
+    max-width: 880px;
+    margin: 0 auto 24px;
+    text-align: center
+}
+
+.supply-showcase {
+    display: grid;
+    gap: 21px
+}
+
+.supply-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    background: #fff;
+    border: 1px solid #ead9df;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px #92204a0a
+}
+
+.supply-row-content {
+    min-width: 0;
+    padding: 10px 28px 18px
+}
+
+.supply-row h3 {
+    font-size: 26px;
+    line-height: 1.3;
+    color: var(--rose-dark);
+    margin: 0 0 9px
+}
+
+.supply-images {
+    display: grid;
+    grid-template-columns: repeat(var(--image-count), minmax(0, 1fr));
+    gap: 18px;
+    align-items: start
+}
+
+.supply-images figure {
+    min-width: 0;
+    margin: 0;
+    text-align: center
+}
+
+.supply-images img {
+    display: block;
+    width: 100%;
+    height: 130px;
+    object-fit: contain;
+    background: #fff
+}
+
+.supply-images figcaption {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--muted);
+    padding-top: 6px
+}
+
+.supply-products {
+    margin-top: 12px;
+    border-top: 1px solid #f0e4e8;
+    padding-top: 12px
+}
+
+.supply-products ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px 22px
+}
+
+.supply-products li {
+    position: relative;
+    padding-left: 15px;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink)
+}
+
+.supply-products li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .58em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold)
+}
+
+.supply-contact {
+    min-width: 0;
+    padding: 16px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(150deg, #fff4f7, #fce7ee);
+    border-left: 1px solid #ecd3dc
+}
+
+.supply-contact-icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    background: #fff;
+    color: #198346;
+    border-radius: 50%;
+    font-size: 23px;
+    margin-bottom: 9px
+}
+
+.supply-contact h4 {
+    color: var(--rose-dark);
+    font-size: 28px;
+    line-height: 1.4;
+    margin: 0 0 8px
+}
+
+.supply-contact p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.45;
+    margin: 0 0 10px
+}
+
+.supply-whatsapp-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    background: #197c43;
+    color: #fff;
+    border-radius: 9px;
+    padding: 13px 8px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    transition: background .2s
+}
+
+.supply-whatsapp-link:hover {
+    background: #116133
+}
+
+.supply-contact a:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 4px
+}
+
+.supply-contact-phone {
+    font-size: 13px;
+    margin-top: 8px;
+    color: var(--rose-dark)
+}
+
+@media(max-width:1100px) {
+    .supply-row {
+        grid-template-columns: minmax(0, 1fr) 210px
+    }
+
+    .supply-row-content {
+        padding: 16px 20px
+    }
+
+    .supply-images {
+        gap: 12px
+    }
+
+    .supply-images img {
+        height: 88px
+    }
+
+    .supply-products ul {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .supply-contact {
+        padding: 16px 15px
+    }
+}
+
+@media(max-width:760px) {
+    .supply-row {
+        grid-template-columns: minmax(0, 1fr)
+    }
+
+    .supply-contact {
+        border-left: 0;
+        border-top: 1px solid #ecd3dc;
+        padding: 16px
+    }
+
+    .supply-contact h4 br {
+        display: none
+    }
+
+    .supply-contact-icon {
+        display: none
+    }
+
+    .supply-contact p {
+        margin-bottom: 10px
+    }
+
+    .supply-whatsapp-link {
+        max-width: 280px
+    }
+
+    .supply-images {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px 14px
+    }
+
+    .supply-images img {
+        height: 95px
+    }
+
+    .supply-row h3 {
+        font-size: 24px
+    }
+}
+
+@media(max-width:460px) {
+    .supply-row-content {
+        padding: 15px 17px
+    }
+
+    .supply-images {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .supply-images img {
+        height: 84px
+    }
+
+    .supply-images figcaption {
+        font-size: 13px
+    }
+
+    .supply-products ul {
+        gap: 7px 16px
+    }
+
+    .supply-products li {
+        font-size: 14px
+    }
+
+    .supply-row {
+        border-radius: 17px
+    }
+
+    .supply-showcase {
+        gap: 17px
+    }
+}
+/* Category enquiry form */
+.supply-enquire { border: 0; cursor: pointer; font-family: inherit; font-size: 15px; }
+.supply-enquire:focus-visible, .supply-enquiry-dialog :focus-visible { outline: 3px solid #c99635; outline-offset: 3px; }
+.supply-enquiry-dialog { box-sizing: border-box; width: min(520px, calc(100% - 28px)); max-height: 90vh; max-height: 90dvh; overflow-y: auto; margin: auto; padding: 30px; border: 1px solid #eed7df; border-radius: 22px; background: #fffafc; color: #38242c; box-shadow: 0 24px 80px #30111f40; }
+.supply-enquiry-dialog::backdrop { background: #26101b99; backdrop-filter: blur(4px); }
+.supply-enquiry-dialog [hidden] { display: none !important; }
+.enquiry-close { position: absolute; top: 10px; right: 12px; width: 36px; height: 36px; border: 0; border-radius: 50%; background: #f8e8ee; color: #7e2144; font-size: 27px; cursor: pointer; }
+.enquiry-eyebrow { display: block; margin: 4px 25px 10px 0; color: #9c4564; font-size: 11px; font-weight: 700; letter-spacing: 1.3px; }
+.supply-enquiry-dialog h2 { font-size: 26px; line-height: 1.2; margin: 0 20px 10px 0; color: #832349; }
+.enquiry-intro, .enquiry-note { font-size: 14px; line-height: 1.5; color: #76616a; }
+#supply-enquiry-form label { display: block; font-size: 14px; font-weight: 600; margin: 14px 0 6px; }
+#supply-enquiry-form input, #supply-enquiry-form select, #supply-enquiry-form textarea { display: block; box-sizing: border-box; width: 100%; min-width: 0; border: 1px solid #dfcbd3; border-radius: 9px; padding: 11px 12px; font: inherit; font-size: 16px; background: white; color: #38242c; }
+#supply-enquiry-form input[readonly] { background: #f8eaf0; color: #832349; font-weight: 600; }
+#supply-enquiry-form textarea { resize: vertical; }
+.enquiry-optional { font-weight: 400; color: #76616a; }
+.enquiry-note { margin: 16px 0; font-size: 12px; }
+.enquiry-send { display: block; box-sizing: border-box; width: 100%; padding: 14px 12px; border: 0; border-radius: 10px; background: #197c43; color: white; text-align: center; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+.enquiry-send:hover { background: #116133; color: white; }
+#enquiry-ready { padding-top: 12px; }
+#enquiry-ready h3 { color: #197c43; font-size: 23px; }
+#enquiry-ready p { margin: 12px 0 22px; line-height: 1.6; }
+.enquiry-edit { display: block; margin: 16px auto 0; padding: 8px; border: 0; background: transparent; color: #832349; text-decoration: underline; cursor: pointer; font: inherit; }
+@media(max-width:480px) { .supply-enquiry-dialog { padding: 26px 20px; } .supply-enquiry-dialog h2 { font-size: 23px; } }
+
+/* Keep Submit separate from the mobile number on all screen sizes. */
+#supply-enquiry-form > .enquiry-send { margin-top: 20px; }
+
+/* Short, prominent confirmation when customers return from WhatsApp. */
+#enquiry-ready{text-align:center;padding:18px 0 4px}
+.enquiry-success-mark{display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:0 auto 20px;border-radius:50%;background:#e4f4e9;color:#197c43;font-size:36px}
+.supply-enquiry-dialog #enquiry-thanks-title{font-size:clamp(27px,5vw,34px);line-height:1.2;margin:0 0 18px;color:#832349}
+#enquiry-ready .enquiry-thanks-copy{font-size:20px;line-height:1.6;margin:0 0 26px;color:#38242c}
+#enquiry-ready .enquiry-send-reminder{font-size:13px;color:#76616a;margin:18px 0 10px}
+#enquiry-open-again{font-size:14px;color:#832349;text-decoration:underline}
+
+/* Prominent manufacturer heading and full-button green / white blink. */
+.baking-essentials-section .supply-contact h4{font-weight:800;line-height:1.35;margin-bottom:20px}
+.baking-essentials-section .supply-contact .supply-enquire{box-sizing:border-box;width:100%;max-width:320px;min-height:66px;padding:8px 10px;border:2px solid #197c43;border-radius:12px;font-size:20px;font-weight:800;line-height:1.35;gap:8px;background:#197c43;color:#fff;box-shadow:0 5px 14px #197c431a;animation:supply-price-blink 4s ease-in-out infinite;transition:none}
+@keyframes supply-price-blink{0%,35%,100%{background-color:#197c43;color:#fff}50%,85%{background-color:#fff;color:#197c43}}
+.baking-essentials-section .supply-contact .supply-enquire:hover{box-shadow:0 6px 18px #197c4330}
+@media(max-width:760px){.baking-essentials-section .supply-contact .supply-enquire{max-width:320px;min-height:64px;font-size:19px}}
+@media(prefers-reduced-motion:reduce){.baking-essentials-section .supply-contact .supply-enquire{animation:none;background:#197c43;color:#fff}}
+
+/* Continue the grid after the last product, using the next available slot. */
+.supply-products li.supply-more-item{padding-left:15px;display:flex;align-items:center}
+.supply-products li.supply-more-item::before{display:none}
+.supply-more-products{display:inline-flex;align-items:center;gap:8px;color:#832349;font-weight:700;text-decoration:underline;text-underline-offset:4px;line-height:1.55}
+.supply-more-products:hover{color:#197c43}
+.supply-more-products:focus-visible{outline:3px solid #c99635;outline-offset:4px;border-radius:3px}
+
+/* Equipment and Tools links occupy the second column of the next row. */
+.supply-products li.supply-more-second-column{grid-column:2}

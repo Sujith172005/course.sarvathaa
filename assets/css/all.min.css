@@ -1,0 +1,7 @@
+.fa-whatsapp::before {
+    content: "\f232";
+    margin-right: 6px;
+}
+.fa-whatsappp::before {
+    content: "\f232";
+}

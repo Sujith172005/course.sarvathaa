@@ -1,0 +1,25 @@
+[Unit]
+Description=Sarvathaa Flask application
+After=network.target mysql.service
+Wants=network.target
+
+[Service]
+Type=notify
+NotifyAccess=all
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/sarvathaa
+EnvironmentFile=/etc/sarvathaa.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+RuntimeDirectory=sarvathaa
+RuntimeDirectoryMode=0750
+ExecStart=/var/www/sarvathaa/venv/bin/gunicorn --config /var/www/sarvathaa/deploy/gunicorn.conf.py wsgi:app
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

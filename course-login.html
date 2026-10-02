@@ -2,61 +2,113 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <meta content="Sarvathaa Training Center" name="description" />
-    <title>Sarvathaa Teaching Practice Training Center</title>
-    <link href="assets/css/style.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <meta charset="utf-8" />
+    <link rel="icon" href="favicon.ico?v=sarvathaa-round-1" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" sizes="512x512" href="favicon.png?v=sarvathaa-round-1" />
+    <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png?v=sarvathaa-round-1" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=sarvathaa-round-1" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=sarvathaa-round-1" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=sarvathaa-round-1" />
+
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="Student and administrator login for Sarvathaa course access." name="description" />
+  <title>Login | Sarvathaa</title>
+  <link href="assets/css/style.css?v=20261001-869e2f5d430f" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/all.min.css?v=20261001-6a63d55e4f0b" />
+  <style>
+    .login-role-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 0 0 22px;
+      padding: 6px;
+      border-radius: 14px;
+      background: #f7eee7
+    }
+
+    .login-role-btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: transparent;
+      color: #5b3d32;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer
+    }
+
+    .login-role-btn.active {
+      background: #c42d63;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(196, 45, 99, .22)
+    }
+
+    .login-role-panel[hidden] {
+      display: none !important
+    }
+
+    .admin-login-note {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fff7e8;
+      color: #684b35;
+      font-size: 13px;
+      line-height: 1.55
+    }
+
+    @media(max-width:640px) {
+      .login-role-switch {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div class="preloader">
-        <div class="loader"></div>
+  <div class="preloader">
+    <div class="loader"></div>
+  </div>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-location">📍 Indiranagar, Bangalore</div>
+      <div class="topbar-right"><span>⏰ Mon–Sat: 10:00 AM – 6:00 PM</span><a href="tel:+919886916067">📞
+          +91-9886916067</a></div>
     </div>
-    <div class="topbar">
-        <div class="topbar-inner">
-            <div class="topbar-location">📍 Indiranagar, Bangalore</div>
-            <div class="topbar-right">
-                <span>⏰ Mon–Sat: 10:00 AM – 6:00 PM</span>
-                <a href="tel:+91-9886916067">📞 +91-9886916067</a>
-            </div>
-        </div>
-    </div>
-    <header class="header">
+  </div>
+  <header class="header">
         <nav class="nav centered-nav">
-            <a class="brand mobile-brand" href="index.html"><img alt="Sarvathaa Logo"
-                    src="assets/images/sarvathaa-logo.png" /></a>
+             <a class="brand mobile-brand" href="index.html"><img alt="Sarvathaa Logo"
+                    src="assets/images/sarvathaa-logo.webp" /></a>
             <button aria-label="Open menu" class="hamburger" type="button">☰</button>
             <div class="nav-links">
                 <a href="index.html">Home</a>
                 <a href="index.html#about-page-title">About us</a>
-                <div class="dropdown">
-                    <a class="dropbtn direct-supply-link" href="Bake to business.html">Bake to Business Program▾</a>
-                    <div class="dropdown-menu">
-                        <a href="Bake to business.html#silver-plan">Silver Plan</a>
-                                                <a href="Bake to business.html#gold-plan">Gold Plan</a>
-                        <a href="Bake to business.html#platinum-plan">Platinum Plan</a>
+              <div class="dropdown">
+                        <a class="dropbtn direct-supply-link" href="Bake to business.html">Bake to Business Program▾</a>
+                        <div class="dropdown-menu">
+<a href="Bake to business.html#silver-plan">Silver Plan</a>
+<a href="Bake to business.html#gold-plan">Gold Plan</a>
+<a href="Bake to business.html#platinum-plan">Platinum Plan</a>
+</div>
                     </div>
-                </div>
-                <a href="baking-skill-center.html">Baking skill center</a>
-                <a class="brand nav-brand-center"><img alt="Sarvathaa Logo"
-                        src="assets/images/sarvathaa-logo.png" /></a>
+                <a href="baking-practice-center.html">Baking Practice Center</a>
+                           <a class="brand nav-brand-center" href="index.html" aria-label="Sarvathaa home"><img alt="Sarvathaa Logo"
+                        src="assets/images/sarvathaa-logo.webp" /></a>
 
-                <div class="dropdown">
-                    <a class="dropbtn direct-supply-link" href="direct-supply-solutions.html">Direct Supply
-                        Solutions</a>
-                    <div class="dropdown-menu">
-                        <a href="direct-supply-solutions.html#direct-supply">Ingredients </a>
-                        <a href="direct-supply-solutions.html#direct-supply">Equipment</a>
-                        <a href="direct-supply-solutions.html#direct-supply">Tools, Moulds & Accessories</a>
-                        <a href="direct-supply-solutions.html#direct-supply">Packaging</a>
-                    </div>
+                 <div class="dropdown">
+                    <a class="dropbtn direct-supply-link" href="direct-supply-solutions.html">Direct Supply Solutions</a>
+                     <div class="dropdown-menu">
+                            <a href="direct-supply-solutions.html#direct-supply">Ingredients </a>
+                            <a href="direct-supply-solutions.html#direct-supply">Equipment</a>
+                            <a href="direct-supply-solutions.html#direct-supply">Tools, Moulds & Accessories</a>
+                            <a href="direct-supply-solutions.html#direct-supply">Packaging</a>
+                        </div>
                 </div>
                 <a href="incubation-center.html">Incubation Center</a>
                 <a class="course-login-nav" href="course-login.html">Login</a>
-                <a class="nav-whatsapp" href="https://wa.me/919886916067" target="_blank" rel="noopener"
-                    aria-label="WhatsApp">
+                <a class="nav-whatsapp" href="https://wa.me/919886916067" target="_blank" rel="noopener" aria-label="WhatsApp">
                     <i class="fab fa-whatsapp" aria-hidden="true"></i>
                 </a>
                 <a class="nav-instagram" href="#" target="_blank" rel="noopener" aria-label="Instagram">
@@ -66,72 +118,79 @@
             </div>
         </nav>
     </header>
+  <main>
     <section class="course-login-premium">
-        <div class="container">
-            <div class="login-copy" style="text-align:center;max-width:760px;margin:0 auto 24px"><span
-                    class="eyebrow">Sarvathaa Login Portal</span>
-                <h1>Student Course Login and Admin Login</h1>
-                <p>Students can enter their activated plan. The Sarvathaa admin can approve plan requests and create
-                    student passwords.</p>
-            </div>
-            <div class="login-premium-wrap">
-                <div class="login-card premium-login-card">
-                    <h2>Student Course Login</h2>
-                    <p class="muted">Use the username and password created by admin.</p>
-                    <form class="course-form" id="studentLoginForm"><label>Student Username<input id="loginUsername"
-                                placeholder="Example: silver001" required="" type="text" /></label><label>Student
-                            Password<input id="loginPassword" placeholder="Enter password" required=""
-                                type="password" /></label><button class="btn" type="submit">Enter My Course</button>
-                        <p class="form-message" id="loginMessage"></p>
-                    </form><a class="btn secondary" data-wa="Hi Sarvathaa Team, I need help with my course login."
-                        href="#">Need Login Help?</a>
-                </div>
-                <div class="login-card premium-login-card" id="admin-login">
-                    <h2>Admin Login</h2>
-                    <p class="muted">Only for the Sarvathaa admin team.</p>
-                    <form class="course-form" id="adminLoginForm"><label>Admin Username<input id="adminUsername"
-                                required="" autocomplete="username" type="text" /></label><label>Admin Password<input
-                                id="adminPassword" required="" autocomplete="current-password"
-                                type="password" /></label><button class="btn" type="submit">Open Admin
-                            Dashboard</button>
-                        <p class="form-message" id="adminLoginMessage"></p>
-                    </form>
-                </div>
-            </div>
+      <div class="container login-premium-wrap">
+        <div class="login-copy"><span class="eyebrow">Sarvathaa Secure Portal</span>
+          <h1>One login page for students and administrators</h1>
+          <p>Students can open their paid courses. Sarvathaa administrators can manage students, course access and
+            coupons.</p>
+          <div class="login-benefits"><span>🎥 Paid videos</span><span>📘 Course notes</span><span>🔒 Secure admin
+              access</span></div>
         </div>
+        <div class="login-card premium-login-card">
+          <div class="login-role-switch" role="tablist" aria-label="Choose login type">
+            <button class="login-role-btn active" id="studentLoginTab" type="button" role="tab" aria-selected="true"
+              aria-controls="studentLoginPanel">Student Login</button>
+            <button class="login-role-btn" id="adminLoginTab" type="button" role="tab" aria-selected="false"
+              aria-controls="adminLoginPanel">Admin Login</button>
+          </div>
+          <div class="login-role-panel" id="studentLoginPanel" role="tabpanel" aria-labelledby="studentLoginTab">
+            <h2>My Courses Login</h2>
+            <p class="muted">Enter the student details sent after payment verification.</p>
+            <form class="course-form" id="studentLoginForm"><label>Username<input id="loginUsername"
+                  autocomplete="username" placeholder="Example: piping001" required
+                  type="text" /></label><label>Password<input id="loginPassword" autocomplete="current-password"
+                  placeholder="Enter password" required type="password" /></label><button class="btn"
+                type="submit">Login to My Courses</button>
+              <p class="form-message" id="loginMessage" role="status"></p>
+            </form>
+            <a class="btn secondary" data-wa="Hi Sarvathaa Team, I need help with my course login." href="#">Need Login
+              Help?</a>
+          </div>
+          <div class="login-role-panel" id="adminLoginPanel" role="tabpanel" aria-labelledby="adminLoginTab" hidden>
+            <h2>Administrator Login</h2>
+            <p class="muted">For authorised Sarvathaa team members only.</p>
+            <form class="course-form" id="adminLoginForm"><label>Admin Username<input id="adminUsername"
+                  autocomplete="username" required type="text" /></label><label>Admin Password<input id="adminPassword"
+                  autocomplete="current-password" required type="password" /></label><button class="btn"
+                type="submit">Open Admin Dashboard</button>
+              <p class="form-message" id="adminLoginMessage" role="status"></p>
+            </form>
+            <p class="admin-login-note"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Never share the
+              administrator password with students or customers.</p>
+          </div>
+        </div>
+      </div>
     </section>
-    <footer class="footer">
-        <div class="footer-grid footer-grid-contact">
-            <div class="footer-brand">
-                <img alt="Sarvathaa" src="assets/images/sarvathaa-logo.png" />
-                <p>Offline practice area, teaching videos, incubation center, bakery essentials and packaging support.
-                </p>
-            </div>
-            <div>
-                <h3>Quick Links</h3>
-                <a href="index.html">Home</a>
-                <a href="index.html#about-page-title">About Us</a>
-                <a class="course-login-nav" href="course-login.html">Login</a>
-            </div>
-            <div>
-                <h3>What We Provide </h3>
-                <a href="Bake to business.html">Bake to Business Program</a>
-                <a href="baking-skill-center.html">Baking skill center</a>
-                <a href="direct-supply-solutions.html">Direct Supply Solutions</a>
-                <a href="incubation-center.html">Incubation Center</a>
-            </div>
-            <div class="footer-contact">
-                <h3>Contact</h3>
-                <p>Ullaaya Brothers Foods Pvt Ltd</p>
-                <p>No.345, 1st cross, 4th Main , Indiranagar, Bangalore–560075</p>
-                <p>📞 080-42046781, +91-9886916067</p>
-                <a>📧contact@ullaaya.com</a>
-            </div>
-        </div>
-        <div class="copyright">© 2026 Sarvathaa. All rights reserved.</div>
-    </footer>
-    <script src="assets/js/script.js"></script>
-    <script src="assets/js/course-app.js"></script>
+  </main>
+  <footer class="footer">
+    <div class="footer-grid footer-grid-contact">
+      <div class="footer-brand"><img alt="Sarvathaa" src="assets/images/sarvathaa-logo.webp" />
+        <p>Offline practice area, teaching videos, incubation center, bakery essentials and packaging support.</p>
+      </div>
+      <div>
+        <h3>Quick Links</h3><a href="index.html">Home</a><a href="index.html#about-page-title">About Us</a><a
+          href="course-login.html">Login</a>
+      </div>
+      <div>
+        <h3>What We Provide</h3><a href="Bake to business.html">Bake to Business Program</a><a href="baking-practice-center.html">Baking Practice Center</a><a href="direct-supply-solutions.html">Direct Supply
+          Solutions</a><a href="incubation-center.html">Incubation Center</a>
+      </div>
+      <div class="footer-contact">
+        <h3>Contact</h3>
+        <p><strong style="font-weight:700;white-space:normal;overflow-wrap:break-word">Ullaaya Brothers Foods Pvt Ltd</strong></p>
+        <p>No.345, 1st Cross, 4th Main, Indiranagar, Bangalore–560075</p>
+        <p>📞 080-42046781, +91-9886916067</p><a href="mailto:contact@ullaaya.com">📧 contact@ullaaya.com</a>
+      </div>
+    </div>
+    <div class="copyright">© 2026 Sarvathaa. All rights reserved.</div>
+  </footer>
+  <script src="assets/js/script.js?v=20261001-b8c9c838df06"></script>
+  <script src="assets/js/course-app.js?v=20261001-633d68f4ecee"></script>
+  <script>
+    (function () { const studentTab = document.getElementById('studentLoginTab'), adminTab = document.getElementById('adminLoginTab'), studentPanel = document.getElementById('studentLoginPanel'), adminPanel = document.getElementById('adminLoginPanel'); function showRole(role) { const admin = role === 'admin'; studentPanel.hidden = admin; adminPanel.hidden = !admin; studentTab.classList.toggle('active', !admin); adminTab.classList.toggle('active', admin); studentTab.setAttribute('aria-selected', String(!admin)); adminTab.setAttribute('aria-selected', String(admin)); if (admin) document.getElementById('adminUsername').focus() } studentTab.addEventListener('click', () => { history.replaceState(null, '', '#student'); showRole('student') }); adminTab.addEventListener('click', () => { history.replaceState(null, '', '#admin'); showRole('admin') }); showRole(location.hash.toLowerCase() === '#admin' ? 'admin' : 'student') }());
+  </script>
 </body>
 
 </html>
