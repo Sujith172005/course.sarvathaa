@@ -30,7 +30,7 @@ body.essentials-detail .catalog-nav {
 body.essentials-detail .catalog-nav .nav-links {
     position: static !important;
     display: grid !important;
-    grid-template-columns: 170px minmax(0, 1fr) max-content !important;
+    grid-template-columns: 170px max-content minmax(0, 1fr) !important;
     gap: 24px !important;
     width: 100% !important;
     max-width: none !important;
@@ -51,7 +51,7 @@ body.essentials-detail .essential-nav-right {
 }
 
 body.essentials-detail .essential-nav-left {
-    justify-content: flex-end
+    justify-content: flex-start
 }
 
 body.essentials-detail .essential-nav-right {
@@ -240,7 +240,7 @@ body.essentials-detail .footer .footer-grid>div {
 
 @media(min-width:901px) and (max-width:1200px) {
     body.essentials-detail .catalog-nav .nav-links {
-        grid-template-columns: 140px minmax(0, 1fr) max-content !important;
+        grid-template-columns: 140px max-content minmax(0, 1fr) !important;
         gap: 16px !important
     }
 
@@ -409,4 +409,10 @@ body.essentials-detail .essential-nav-right { justify-content: flex-start; }
 }
 @media (max-width:600px) {
     body.essentials-detail .essential-grid { grid-template-columns: minmax(0, 330px); }
+}
+
+/* Keep social icons at the right edge of the desktop catalog navbar. */
+@media (min-width:901px) {
+    body.essentials-detail .essential-nav-right { width: 100%; }
+    body.essentials-detail .essential-social { margin-left: auto; flex-shrink: 0; }
 }
